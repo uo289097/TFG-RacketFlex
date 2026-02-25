@@ -1,5 +1,6 @@
-package com.uniovi.tfg.racketFlex.features.auth
+package com.uniovi.tfg.racketFlex.features.auth.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.uniovi.tfg.racketFlex.features.auth.LoginViewModel
 
 
 @Composable
@@ -23,6 +25,7 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -92,6 +95,26 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Iniciar Sesión")
+            }
+            when (uiState) {
+                is LoginState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is LoginState.Error -> {
+                    Text(
+                        text = (uiState as LoginState.Error).message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                is LoginState.Success -> {
+                    LaunchedEffect(Unit) {
+                        Log.d("LOGIN", "OK")
+                    }
+                }
+
+                else -> {}
             }
 
             Spacer(modifier = Modifier.height(16.dp))

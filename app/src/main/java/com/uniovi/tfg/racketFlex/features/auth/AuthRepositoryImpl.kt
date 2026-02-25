@@ -7,10 +7,6 @@ class AuthRepositoryImpl(
     private val firebaseAuthService: FirebaseAuthService
 ) : AuthRepository {
     override suspend fun login(email: String, password: String): Boolean {
-        var value = false
-        firebaseAuthService.login(email, password).addOnCompleteListener { task ->
-            value = task.isSuccessful
-        }
-        return value
+        return firebaseAuthService.login(email, password)
     }
 }
