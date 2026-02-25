@@ -21,7 +21,7 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
 ) {
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Box(
@@ -61,8 +61,8 @@ fun LoginScreen(
 
             // Usuario
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
+                value = email,
+                onValueChange = { email = it },
                 label = { Text("Usuario") },
                 singleLine = true,
                 shape = MaterialTheme.shapes.small,
@@ -88,7 +88,7 @@ fun LoginScreen(
 
             // Botón login
             Button(
-                onClick = { viewModel.login(username, password) },
+                onClick = { viewModel.login(email, password) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Iniciar Sesión")

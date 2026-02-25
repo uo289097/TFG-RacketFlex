@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "199550206056",
+    "project_id": "tfg-racketflex",
+    "storage_bucket": "tfg-racketflex.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199550206056:android:e08c91439a6d2721febbdd",
+        "android_client_info": {
+          "package_name": "com.uniovi.tfg.racketFlex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbeaJPHOhvVQdg-1u7dflx4Zw54_Ue7vg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

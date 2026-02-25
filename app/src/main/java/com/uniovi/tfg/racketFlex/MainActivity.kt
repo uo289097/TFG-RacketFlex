@@ -11,10 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
 import com.uniovi.tfg.racketFlex.features.auth.LoginScreen
 import com.uniovi.tfg.racketFlex.ui.theme.TFGRacketFlexTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val firebaseAuthService = FirebaseAuthService()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,5 +27,16 @@ class MainActivity : ComponentActivity() {
                 LoginScreen()
             }
         }
+    }
+
+    /**
+     * Permite que si estás loggeado no salga el login
+     */
+    override fun onStart() {
+        super.onStart()
+        val currentUser = firebaseAuthService.currentUser()
+        //if(currentUser != null)
+        //navegar a la home
+
     }
 }
