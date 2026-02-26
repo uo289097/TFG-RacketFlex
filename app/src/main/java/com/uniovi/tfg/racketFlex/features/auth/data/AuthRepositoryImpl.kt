@@ -1,7 +1,7 @@
-package com.uniovi.tfg.racketFlex.features.auth
+package com.uniovi.tfg.racketFlex.features.auth.data
 
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
-import com.uniovi.tfg.racketFlex.core.repository.AuthRepository
+import com.uniovi.tfg.racketFlex.features.auth.domain.AuthRepository
 
 class AuthRepositoryImpl(
     private val firebaseAuthService: FirebaseAuthService

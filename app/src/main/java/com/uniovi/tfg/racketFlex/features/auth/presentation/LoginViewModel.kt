@@ -1,10 +1,10 @@
-package com.uniovi.tfg.racketFlex.features.auth
+package com.uniovi.tfg.racketFlex.features.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
-import com.uniovi.tfg.racketFlex.core.repository.AuthRepository
-import com.uniovi.tfg.racketFlex.features.auth.ui.LoginState
+import com.uniovi.tfg.racketFlex.features.auth.data.AuthRepositoryImpl
+import com.uniovi.tfg.racketFlex.features.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

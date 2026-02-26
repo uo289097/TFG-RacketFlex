@@ -1,4 +1,4 @@
-package com.uniovi.tfg.racketFlex.core.repository
+package com.uniovi.tfg.racketFlex.features.auth.domain
 
 interface AuthRepository {
 

@@ -1,4 +1,4 @@
-package com.uniovi.tfg.racketFlex.features.auth.ui
+package com.uniovi.tfg.racketFlex.features.auth.presentation
 
 sealed class LoginState {
     object Idle : LoginState()
