@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -47,6 +48,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
@@ -66,6 +68,13 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+
+    implementation(libs.kotlinx.serialization.core)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,4 +82,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+
 }

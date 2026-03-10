@@ -25,11 +25,11 @@ class MainActivity : ComponentActivity() {
     /**
      * Permite que si estás loggeado no salga el login
      */
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         val currentUser = firebaseAuthService.currentUser()
         //if(currentUser != null)
         //navegar a la home
 
-    }
+    }*/
 }
