@@ -22,6 +22,7 @@ import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
+    navigateToHome: () -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -110,9 +111,7 @@ fun LoginScreen(
                 }
 
                 is LoginState.Success -> {
-                    LaunchedEffect(Unit) {
-                        Log.d("LOGIN", "OK")
-                    }
+                    navigateToHome()
                 }
 
                 else -> {}
@@ -126,10 +125,4 @@ fun LoginScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen()
 }
