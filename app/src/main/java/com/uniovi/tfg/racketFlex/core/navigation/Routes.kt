@@ -9,7 +9,13 @@ sealed class Routes : NavKey {
     data object LoginRoute : Routes()
 
     @Serializable
-    data object BookingRoute : Routes()
+    data object HomeRoute : Routes()
+
+    @Serializable
+    data object ReservasRoute : Routes()
+
+    @Serializable
+    data object PartidosRoute : Routes()
 
     @Serializable
     data object ErrorRoute : Routes()
