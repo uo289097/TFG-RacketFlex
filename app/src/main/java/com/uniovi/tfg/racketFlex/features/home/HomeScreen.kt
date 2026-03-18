@@ -13,13 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 
 @Composable
 fun HomeScreen(
-    userId: String,
-    clubId: String,
+    user: User,
     modules: List<ClubModule>,
 ) {
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
@@ -44,7 +44,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             when (selectedModule) {
-                ClubModule.RESERVAS -> BookingScreen(clubId = clubId, userId = userId)
+                ClubModule.RESERVAS -> BookingScreen(clubId = user.club, userId = user.email)
                 ClubModule.PARTIDOS -> MatchesScreen()
                 else -> Text("Módulo no implementado")
             }

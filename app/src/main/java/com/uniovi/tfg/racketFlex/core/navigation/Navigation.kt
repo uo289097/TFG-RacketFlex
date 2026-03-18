@@ -32,8 +32,7 @@ fun Navigation() {
             entry<HomeRoute> { route ->
                 HomeScreen(
                     modules = route.modules,
-                    clubId = route.user.club,
-                    userId = route.user.email
+                    user = route.user
                 )
             }
 
