@@ -25,40 +25,20 @@ fun Navigation() {
         onBack = {},
         entryProvider = entryProvider {
             entry<LoginRoute> {
-                LoginScreen {
-                    backStack.add(HomeRoute)
+                LoginScreen { user, modules ->
+                    backStack.add(HomeRoute(user, modules))
                 }
             }
-            entry<HomeRoute> {
+            entry<HomeRoute> { route ->
                 HomeScreen(
-                    modules = listOf(
-                        ClubModule.RESERVAS,
-                        ClubModule.PARTIDOS
-                    ),
-                    onReservasClick = {
-                        backStack.add(ReservasRoute)
-                    },
-                    onPartidosClick = {
-                        backStack.add(PartidosRoute)
-                    }
+                    modules = route.modules,
+                    clubId = route.user.club,
+                    userId = route.user.email
                 )
             }
 
-            HomeScreen(
-                modules = listOf(
-                    ClubModule.RESERVAS,
-                    ClubModule.PARTIDOS
-                ),
-                onReservasClick = {
-                    backStack.add(ReservasRoute)
-                },
-                onPartidosClick = {
-                    backStack.add(PartidosRoute)
-                }
-            )
-
-            entry<ReservasRoute> {
-                BookingScreen()
+            entry<ReservasRoute> { route ->
+                BookingScreen(clubId = route.clubId, userId = route.userId)
             }
 
             entry<PartidosRoute> {

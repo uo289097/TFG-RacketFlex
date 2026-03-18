@@ -1,6 +1,8 @@
 package com.uniovi.tfg.racketFlex.core.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.uniovi.tfg.racketFlex.core.model.ClubModule
+import com.uniovi.tfg.racketFlex.core.model.User
 import kotlinx.serialization.Serializable
 
 sealed class Routes : NavKey {
@@ -9,10 +11,16 @@ sealed class Routes : NavKey {
     data object LoginRoute : Routes()
 
     @Serializable
-    data object HomeRoute : Routes()
+    data class HomeRoute(
+        val user: User,
+        val modules: List<ClubModule>
+    ) : Routes()
 
     @Serializable
-    data object ReservasRoute : Routes()
+    data class ReservasRoute(
+        val clubId: String,
+        val userId: String
+    ) : Routes()
 
     @Serializable
     data object PartidosRoute : Routes()

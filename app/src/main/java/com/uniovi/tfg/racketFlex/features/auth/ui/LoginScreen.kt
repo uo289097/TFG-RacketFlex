@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.auth.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -11,10 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.uniovi.tfg.racketFlex.core.model.ClubModule
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
 
@@ -22,7 +22,7 @@ import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    navigateToHome: () -> Unit
+    navigateToHome: (User, List<ClubModule>) -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -110,8 +110,16 @@ fun LoginScreen(
                     )
                 }
 
+                // TODO ???
                 is LoginState.Success -> {
-                    navigateToHome()
+                    val data = uiState as LoginState.Success
+
+                    LaunchedEffect(Unit) {
+                        navigateToHome(
+                            data.user,
+                            data.modules
+                        )
+                    }
                 }
 
                 else -> {}
