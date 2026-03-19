@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.uniovi.tfg.racketFlex"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
 
     implementation(libs.kotlinx.serialization.core)
+
+    implementation(libs.compose.material.icons.extended)
 
 
     testImplementation(libs.junit)
