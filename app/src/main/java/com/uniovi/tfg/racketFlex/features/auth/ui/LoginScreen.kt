@@ -1,5 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.auth.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -8,6 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -17,6 +21,7 @@ import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
+import com.uniovi.tfg.racketFlex.R
 
 
 @Composable
@@ -46,11 +51,14 @@ fun LoginScreen(
                     .background(MaterialTheme.colorScheme.primary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                /*Icon(
-                    painter = painterResource(id = R.drawable.ic_trophy),
-                    contentDescription = "Logo",
-                    tint = Color.White
-                )*/
+                Image(
+                    painter = painterResource(id = R.drawable.racketflex_icon),
+                    contentDescription = "RacketFlex Logo",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

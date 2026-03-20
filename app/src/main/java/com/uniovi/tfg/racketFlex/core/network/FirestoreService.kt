@@ -6,7 +6,6 @@ import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.core.model.UserRole
 import kotlinx.coroutines.tasks.await
-import java.io.Console
 
 class FirestoreService {
     private val db = FirebaseFirestore.getInstance()
