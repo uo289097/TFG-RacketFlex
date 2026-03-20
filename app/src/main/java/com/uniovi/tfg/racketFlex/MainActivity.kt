@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.uniovi.tfg.racketFlex.core.navigation.Navigation
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
-import com.uniovi.tfg.racketFlex.features.auth.ui.LoginScreen
 import com.uniovi.tfg.racketFlex.ui.theme.TFGRacketFlexTheme
 
 class MainActivity : ComponentActivity() {

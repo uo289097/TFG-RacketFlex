@@ -1,7 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.booking.data
 
-import android.util.Log
-import androidx.compose.ui.text.toUpperCase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Booking
@@ -10,7 +8,6 @@ import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.booking.domain.BookingRepository
 import kotlinx.coroutines.tasks.await
-import java.util.Locale
 import java.util.Locale.getDefault
 
 class BookingRepositoryImpl(

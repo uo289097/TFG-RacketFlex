@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.booking.presentation
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,7 +26,7 @@ class BookingViewModel(
     var selectedCourt by mutableStateOf<Court?>(null)
     var courts by mutableStateOf<List<Court>>(emptyList())
     var bookings by mutableStateOf<List<Booking>>(emptyList())
-    
+
 
     fun selectDay(day: LocalDate) {
         selectedDay = day
@@ -64,7 +63,7 @@ class BookingViewModel(
         }
     }
 
-    // Función para determinar si un slot está reservado
+    // Determina si un slot está reservado
     fun isReserved(court: Court, initTime: Long, endTime: Long): Boolean {
         return bookings.any {
             it.court == court.id &&
@@ -83,10 +82,15 @@ class BookingViewModel(
                 type = BookingType.INDIVIDUAL
             )
             repository.createBooking(clubId, booking)
-            loadBookings() // refresca los slots
+            loadBookings()
         }
 
     }
+
+    fun hasReachedDailyLimit(userId: String, limit: Int = 2): Boolean {
+        return bookings.count { it.bookerId == userId } >= limit
+    }
+
 }
 
 class BookingViewModelFactory(private val clubId: String) : ViewModelProvider.Factory {

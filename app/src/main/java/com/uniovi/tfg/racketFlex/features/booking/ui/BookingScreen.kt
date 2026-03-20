@@ -53,7 +53,7 @@ fun BookingScreen(
     Log.d("club", "$clubId  $userId")
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
     val slotDuration = Duration.ofMinutes(90) // 1h30min
-    val startHour = 10
+    val startHour = 10                              // TODO Coger info del club
     val endHour = 22
     val slots = remember(slotDuration, startHour, endHour) {
         val start = LocalTime.of(startHour, 0)
@@ -67,6 +67,7 @@ fun BookingScreen(
         result
     }
     var pendingBooking by remember { mutableStateOf<Triple<Court, Long, Long>?>(null) }
+    var showLimitDialog by remember { mutableStateOf(false) }
 
 
     Column(
@@ -186,7 +187,13 @@ fun BookingScreen(
                         val reserved = viewModel.isReserved(court, initTime, endTime)
 
                         Button(
-                            onClick = { pendingBooking = Triple(court, initTime, endTime) },
+                            onClick = {
+                                if (viewModel.hasReachedDailyLimit(userId)) {
+                                    showLimitDialog = true
+                                } else {
+                                    pendingBooking = Triple(court, initTime, endTime)
+                                }
+                            },
                             enabled = !reserved,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Green
@@ -227,7 +234,12 @@ fun BookingScreen(
                 onDismiss = { pendingBooking = null }
             )
         }
+
+        if (showLimitDialog) {
+            DailyLimitDialog(onDismiss = { showLimitDialog = false })
+        }
     }
+
 }
 
 @Composable
@@ -271,6 +283,20 @@ private fun ConfirmBookingDialog(
         },
         dismissButton = {
             OutlinedButton(onClick = onDismiss) { Text("Cancelar") }
+        }
+    )
+}
+
+@Composable
+private fun DailyLimitDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Límite alcanzado") },
+        text = { Text("No puedes realizar más de 2 reservas en el mismo día.") },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Entendido")
+            }
         }
     )
 }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.uniovi.tfg.racketFlex.core.model.ClubModule
 
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.LoginRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.HomeRoute
