@@ -1,5 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.booking.presentation
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,30 +13,33 @@ import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.features.booking.data.BookingRepositoryImpl
 
 class BookingViewModel(
+    private val clubId: String,
     private val repository: BookingRepository = BookingRepositoryImpl(FirebaseFirestore.getInstance())
 ) : ViewModel() {
     var selectedDay by mutableStateOf(LocalDate.now())
-    var selectedSport by mutableStateOf(Sport.TENIS)
+    var selectedSport by mutableStateOf<Sport?>(null)
     var selectedCourt by mutableStateOf<Court?>(null)
     var courts by mutableStateOf<List<Court>>(emptyList())
     var bookings by mutableStateOf<List<Booking>>(emptyList())
-
-    init {
-    }
+    
 
     fun selectDay(day: LocalDate) {
         selectedDay = day
+        selectedSport = null
+        selectedCourt = null
         loadBookings()
     }
 
-    fun selectSport(sport: Sport, clubId: String) {
+    fun selectSport(sport: Sport) {
         selectedSport = sport
         selectedCourt = null
-        loadCourts(clubId)
+        loadCourts()
         loadBookings()
     }
 
@@ -44,17 +48,19 @@ class BookingViewModel(
         loadBookings()
     }
 
-    private fun loadCourts(clubId: String) {
+    private fun loadCourts() {
+        val sport = selectedSport ?: return
         viewModelScope.launch {
-            courts = repository.getCourts(selectedSport, clubId)
+            courts = repository.getCourts(sport, clubId)
         }
     }
 
     private fun loadBookings() {
+        val sport = selectedSport ?: return
         viewModelScope.launch {
             val timestamp =
                 selectedDay.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            bookings = repository.getBookings(timestamp, selectedSport)
+            bookings = repository.getBookings(timestamp, sport, clubId)
         }
     }
 
@@ -64,5 +70,27 @@ class BookingViewModel(
             it.court == court.id &&
                     !(it.endDate <= initTime || it.initDate >= endTime)
         }
+    }
+
+    fun createBooking(userId: String, court: Court, initTime: Long, endTime: Long) {
+        selectedSport ?: return
+        viewModelScope.launch {
+            val booking = Booking(
+                bookerId = userId,
+                court = court.id,
+                initDate = initTime,
+                endDate = endTime,
+                type = BookingType.INDIVIDUAL
+            )
+            repository.createBooking(clubId, booking)
+            loadBookings() // refresca los slots
+        }
+
+    }
+}
+
+class BookingViewModelFactory(private val clubId: String) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return BookingViewModel(clubId) as T
     }
 }

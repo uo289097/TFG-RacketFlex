@@ -6,5 +6,6 @@ import com.uniovi.tfg.racketFlex.core.model.Sport
 
 interface BookingRepository {
     suspend fun getCourts(sport: Sport, clubId: String): List<Court>
-    suspend fun getBookings(dayTimestamp: Long, sport: Sport): List<Booking>
+    suspend fun getBookings(dayTimestamp: Long, sport: Sport, clubId: String): List<Booking>
+    suspend fun createBooking(clubId: String, booking: Booking)
 }
