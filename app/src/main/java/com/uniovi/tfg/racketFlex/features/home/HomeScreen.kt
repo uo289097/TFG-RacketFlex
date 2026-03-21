@@ -70,7 +70,7 @@ fun HomeScreen(
         ) {
             when (selectedModule) {
                 ClubModule.RESERVAS -> BookingScreen(clubId = user.club, userId = user.email)
-                ClubModule.PARTIDOS -> MatchesScreen()
+                ClubModule.MATCHES -> MatchesScreen()
                 else -> Text("Módulo no implementado")
             }
         }

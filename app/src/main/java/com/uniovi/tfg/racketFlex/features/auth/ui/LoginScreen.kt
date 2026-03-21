@@ -136,9 +136,75 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Olvidaste contraseña
-            TextButton(onClick = { /* TODO: acción */ }) {
+            TextButton(onClick = { viewModel.showResetDialog = true }) {
                 Text(text = "¿Olvidaste tu contraseña?", color = MaterialTheme.colorScheme.primary)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextButton(onClick = { /* TODO: acción */ }) {
+                Text(
+                    text = "¿Quieres registrar tu club?",
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }
+
+    if (viewModel.showResetDialog) {
+        ForgotPasswordDialog(
+            onDismiss = {
+                viewModel.showResetDialog = false
+                viewModel.resetEmailSent = false
+            },
+            onSend = { email -> viewModel.sendPasswordReset(email) },
+            emailSent = viewModel.resetEmailSent
+        )
+    }
+}
+
+@Composable
+private fun ForgotPasswordDialog(
+    onDismiss: () -> Unit,
+    onSend: (String) -> Unit,
+    emailSent: Boolean
+) {
+    var email by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Recuperar contraseña") },
+        text = {
+            if (emailSent) {
+                Text("Se ha enviado un correo de recuperación a $email.")
+            } else {
+                Column {
+                    Text("Introduce tu email y te enviaremos un enlace para restablecer tu contraseña.")
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            if (emailSent) {
+                Button(onClick = onDismiss) { Text("Cerrar") }
+            } else {
+                Button(
+                    onClick = { onSend(email) },
+                    enabled = email.isNotBlank()
+                ) { Text("Enviar") }
+            }
+        },
+        dismissButton = {
+            if (!emailSent) {
+                OutlinedButton(onClick = onDismiss) { Text("Cancelar") }
+            }
+        }
+    )
 }

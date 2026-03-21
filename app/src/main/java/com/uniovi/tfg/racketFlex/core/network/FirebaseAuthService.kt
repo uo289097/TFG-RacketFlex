@@ -20,4 +20,13 @@ class FirebaseAuthService {
 
     fun currentUser() = auth.currentUser
 
+    suspend fun sendPasswordReset(email: String): Boolean {
+        return try {
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 }

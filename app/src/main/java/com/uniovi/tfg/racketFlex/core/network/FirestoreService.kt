@@ -50,7 +50,7 @@ class FirestoreService {
 fun String.toClubModule(): ClubModule? {
     return when (this.lowercase()) {
         "reservas" -> ClubModule.RESERVAS
-        "partidos" -> ClubModule.PARTIDOS
+        "partidos" -> ClubModule.MATCHES
         else -> null
     }
 }
