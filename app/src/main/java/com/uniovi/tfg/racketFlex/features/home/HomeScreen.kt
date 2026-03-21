@@ -18,9 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
+import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 
@@ -30,6 +33,9 @@ import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 fun HomeScreen(
     user: User,
     modules: List<ClubModule>,
+    onLogout: () -> Unit,
+    viewModel: HomeViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
 ) {
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
 
@@ -39,8 +45,9 @@ fun HomeScreen(
                 title = { Text(user.club) },
                 actions = {
                     IconButton(onClick = {
-                        /* TODO logout */
-                        Log.d("session", "Cerrando sesión")
+                        viewModel.logout()
+                        loginViewModel.resetState()
+                        onLogout()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,

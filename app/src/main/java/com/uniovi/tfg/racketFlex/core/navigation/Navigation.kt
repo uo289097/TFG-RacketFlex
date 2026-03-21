@@ -1,5 +1,6 @@
 package com.uniovi.tfg.racketFlex.core.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -31,7 +32,10 @@ fun Navigation() {
             entry<HomeRoute> { route ->
                 HomeScreen(
                     modules = route.modules,
-                    user = route.user
+                    user = route.user,
+                    onLogout = {
+                        backStack.removeIf { it !is LoginRoute }
+                    }
                 )
             }
 

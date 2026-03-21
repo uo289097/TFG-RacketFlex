@@ -60,4 +60,8 @@ class LoginViewModel(
             resetEmailSent = success
         }
     }
+
+    fun resetState() {
+        _uiState.value = LoginState.Idle
+    }
 }
