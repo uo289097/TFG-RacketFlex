@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.BookingType
+import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.booking.data.BookingRepositoryImpl
 
 class BookingViewModel(
@@ -87,7 +88,8 @@ class BookingViewModel(
 
     }
 
-    fun hasReachedDailyLimit(userId: String, limit: Int = 2): Boolean {
+    fun hasReachedDailyLimit(userId: String, userRole: UserRole, limit: Int = 2): Boolean {
+        if (userRole == UserRole.ADMIN) return false
         return bookings.count { it.bookerId == userId } >= limit
     }
 

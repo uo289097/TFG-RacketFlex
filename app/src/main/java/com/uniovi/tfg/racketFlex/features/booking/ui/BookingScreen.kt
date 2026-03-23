@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModelFactory
 import java.time.Duration
@@ -45,12 +45,11 @@ import java.util.Locale
 
 @Composable
 fun BookingScreen(
-    clubId: String, userId: String,
+    clubId: String, user: User,
 ) {
     val viewModel: BookingViewModel = viewModel(
         factory = BookingViewModelFactory(clubId)
     )
-    Log.d("club", "$clubId  $userId")
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
     val slotDuration = Duration.ofMinutes(90) // 1h30min
     val startHour = 10                              // TODO Coger info del club
@@ -188,7 +187,7 @@ fun BookingScreen(
 
                         Button(
                             onClick = {
-                                if (viewModel.hasReachedDailyLimit(userId)) {
+                                if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
                                     showLimitDialog = true
                                 } else {
                                     pendingBooking = Triple(court, initTime, endTime)
@@ -228,7 +227,7 @@ fun BookingScreen(
                 selectedDay = viewModel.selectedDay,
                 selectedSport = viewModel.selectedSport,
                 onConfirm = {
-                    viewModel.createBooking(userId, court, initTime, endTime)
+                    viewModel.createBooking(user.email, court, initTime, endTime)
                     pendingBooking = null
                 },
                 onDismiss = { pendingBooking = null }

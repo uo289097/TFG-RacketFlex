@@ -14,4 +14,7 @@ class AuthRepositoryImpl(
         return firebaseAuthService.sendPasswordReset(email)
     }
 
+    override suspend fun createUser(email: String, password: String): Boolean {
+        return firebaseAuthService.createUser(email, password)
+    }
 }

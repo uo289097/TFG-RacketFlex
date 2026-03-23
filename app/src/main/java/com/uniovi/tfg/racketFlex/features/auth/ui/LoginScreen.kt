@@ -27,7 +27,8 @@ import com.uniovi.tfg.racketFlex.R
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    navigateToHome: (User, List<ClubModule>) -> Unit
+    navigateToHome: (User, List<ClubModule>) -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -138,7 +139,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = { /* TODO: acción */ }) {
+            TextButton(onClick = { onNavigateToRegister() }) {
                 Text(
                     text = "¿Quieres registrar tu club?",
                     color = MaterialTheme.colorScheme.primary

@@ -17,9 +17,9 @@ sealed class Routes : NavKey {
     ) : Routes()
 
     @Serializable
-    data class ReservasRoute(
+    data class BookingsRoute(
         val clubId: String,
-        val userId: String
+        val user: User
     ) : Routes()
 
     @Serializable
@@ -28,4 +28,13 @@ sealed class Routes : NavKey {
     @Serializable
     data object ErrorRoute : Routes()
 
+
+    @Serializable
+    data object RegisterClubStep1Route : Routes()
+
+    @Serializable
+    data object RegisterClubStep2Route : Routes()
+
+    @Serializable
+    data object RegisterClubStep3Route : Routes()
 }

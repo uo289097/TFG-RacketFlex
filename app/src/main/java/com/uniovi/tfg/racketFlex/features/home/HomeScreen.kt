@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
-import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
@@ -32,7 +30,7 @@ import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 @Composable
 fun HomeScreen(
     user: User,
-    modules: List<ClubModule>,
+    modules: List<ClubModule>,          //TODO ?? PASAR CLUB EN LUGAR DE LISTA MÓDULOS
     onLogout: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
     loginViewModel: LoginViewModel = viewModel(),
@@ -76,7 +74,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             when (selectedModule) {
-                ClubModule.RESERVAS -> BookingScreen(clubId = user.club, userId = user.email)
+                ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
                 ClubModule.MATCHES -> MatchesScreen()
                 else -> Text("Módulo no implementado")
             }

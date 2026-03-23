@@ -14,8 +14,8 @@ class FirestoreService {
         return try {
             val doc = db.collection("users").document(email).get().await()
 
-            Log.d("club", doc.exists().toString())
             if (doc.exists()) {
+                Log.d("AppRole", doc.getString("rol").toString())
                 User(
                     email = doc.getString("email") ?: "",
                     club = doc.getString("club") ?: "",
@@ -24,10 +24,10 @@ class FirestoreService {
                         doc.getString("rol") == "socio"
                     ) UserRole.SOCIO else UserRole.ADMIN
                 )
+
             } else null
 
         } catch (e: Exception) {
-            Log.d("club", e.toString())
             null
         }
     }
