@@ -144,26 +144,28 @@ fun BookingScreen(
         Spacer(Modifier.height(16.dp))
 
         // --- Selector de pista ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            viewModel.courts.forEach { court ->
-                Button(
-                    onClick = { viewModel.selectCourt(court) },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor =
-                            if (viewModel.selectedCourt == court)
-                                MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.secondary,
-                        contentColor =
-                            if (viewModel.selectedCourt == court)
-                                MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onSecondary
-                    )
-                ) {
-                    Text(court.id)
+        if (viewModel.selectedSport != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                viewModel.courts.forEach { court ->
+                    Button(
+                        onClick = { viewModel.selectCourt(court) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (viewModel.selectedCourt == court)
+                                    MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.secondary,
+                            contentColor =
+                                if (viewModel.selectedCourt == court)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.onSecondary
+                        )
+                    ) {
+                        Text(court.id)
+                    }
                 }
             }
         }
