@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 
@@ -29,7 +30,10 @@ import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
 @Composable
 fun HomeScreen(
     user: User,
-    modules: List<ClubModule>,
+    modules: List<ClubModule>,          //TODO ?? PASAR CLUB EN LUGAR DE LISTA MÓDULOS
+    onLogout: () -> Unit,
+    viewModel: HomeViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
 ) {
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
 
@@ -39,8 +43,9 @@ fun HomeScreen(
                 title = { Text(user.club) },
                 actions = {
                     IconButton(onClick = {
-                        /* TODO logout */
-                        Log.d("session", "Cerrando sesión")
+                        viewModel.logout()
+                        loginViewModel.resetState()
+                        onLogout()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
@@ -69,9 +74,12 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             when (selectedModule) {
-                ClubModule.RESERVAS -> BookingScreen(clubId = user.club, userId = user.email)
-                ClubModule.PARTIDOS -> MatchesScreen()
-                else -> Text("Módulo no implementado")
+                ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
+                ClubModule.MATCHES -> MatchesScreen()
+                ClubModule.COURSES -> Text("Módulo no implementado")
+                ClubModule.COMPETITIONS -> Text("Módulo no implementado")
+                ClubModule.RANKING -> Text("Módulo no implementado")
+                ClubModule.ADMIN -> Text("Módulo no implementado")
             }
         }
     }

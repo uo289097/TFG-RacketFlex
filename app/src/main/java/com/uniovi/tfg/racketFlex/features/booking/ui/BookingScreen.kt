@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,11 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModelFactory
 import java.time.Duration
@@ -45,12 +44,11 @@ import java.util.Locale
 
 @Composable
 fun BookingScreen(
-    clubId: String, userId: String,
+    clubId: String, user: User,
 ) {
     val viewModel: BookingViewModel = viewModel(
         factory = BookingViewModelFactory(clubId)
     )
-    Log.d("club", "$clubId  $userId")
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
     val slotDuration = Duration.ofMinutes(90) // 1h30min
     val startHour = 10                              // TODO Coger info del club
@@ -86,7 +84,14 @@ fun BookingScreen(
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedDay == day) Color.Blue else Color.Gray
+                        containerColor =
+                            if (viewModel.selectedDay == day)
+                                MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.surface,
+                        contentColor =
+                            if (viewModel.selectedDay == day)
+                                MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier
                         .weight(1f)
@@ -121,7 +126,14 @@ fun BookingScreen(
                     onClick = { viewModel.selectSport(sport) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedSport == sport) Color.Blue else Color.Gray
+                        containerColor =
+                            if (viewModel.selectedSport == sport)
+                                MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.secondary,
+                        contentColor =
+                            if (viewModel.selectedSport == sport)
+                                MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Text(sport.name)
@@ -132,19 +144,28 @@ fun BookingScreen(
         Spacer(Modifier.height(16.dp))
 
         // --- Selector de pista ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            viewModel.courts.forEach { court ->
-                Button(
-                    onClick = { viewModel.selectCourt(court) },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedCourt == court) Color.Green else Color.LightGray
-                    )
-                ) {
-                    Text(court.id)
+        if (viewModel.selectedSport != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                viewModel.courts.forEach { court ->
+                    Button(
+                        onClick = { viewModel.selectCourt(court) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (viewModel.selectedCourt == court)
+                                    MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.secondary,
+                            contentColor =
+                                if (viewModel.selectedCourt == court)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.onSecondary
+                        )
+                    ) {
+                        Text(court.id)
+                    }
                 }
             }
         }
@@ -188,7 +209,7 @@ fun BookingScreen(
 
                         Button(
                             onClick = {
-                                if (viewModel.hasReachedDailyLimit(userId)) {
+                                if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
                                     showLimitDialog = true
                                 } else {
                                     pendingBooking = Triple(court, initTime, endTime)
@@ -196,8 +217,10 @@ fun BookingScreen(
                             },
                             enabled = !reserved,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Green
-                            ),
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+
+                                ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 2.dp)
@@ -228,7 +251,7 @@ fun BookingScreen(
                 selectedDay = viewModel.selectedDay,
                 selectedSport = viewModel.selectedSport,
                 onConfirm = {
-                    viewModel.createBooking(userId, court, initTime, endTime)
+                    viewModel.createBooking(user.email, court, initTime, endTime)
                     pendingBooking = null
                 },
                 onDismiss = { pendingBooking = null }

@@ -14,8 +14,8 @@ class FirestoreService {
         return try {
             val doc = db.collection("users").document(email).get().await()
 
-            Log.d("club", doc.exists().toString())
             if (doc.exists()) {
+                Log.d("AppRole", doc.getString("rol").toString())
                 User(
                     email = doc.getString("email") ?: "",
                     club = doc.getString("club") ?: "",
@@ -24,17 +24,22 @@ class FirestoreService {
                         doc.getString("rol") == "socio"
                     ) UserRole.SOCIO else UserRole.ADMIN
                 )
+
             } else null
 
         } catch (e: Exception) {
-            Log.d("club", e.toString())
             null
         }
     }
 
-    suspend fun getClubModules(clubId: String): List<String> {
-        return try {// TODO
-            Log.d("club", clubId)
+    suspend fun getClubModules(clubId: String, user: User): List<String> {
+        if (user.role == UserRole.ADMIN) {
+            return listOf(
+                "reservas",
+                "admin"
+            )
+        }
+        return try {
             val doc = db.collection("clubs").document(clubId).get().await()
             val modules = doc.get("modulos") as? List<*>
 
@@ -50,7 +55,11 @@ class FirestoreService {
 fun String.toClubModule(): ClubModule? {
     return when (this.lowercase()) {
         "reservas" -> ClubModule.RESERVAS
-        "partidos" -> ClubModule.PARTIDOS
+        "partidos" -> ClubModule.MATCHES
+        "courses" -> ClubModule.COURSES
+        "competitions" -> ClubModule.COMPETITIONS
+        "ranking" -> ClubModule.RANKING
+        "admin" -> ClubModule.ADMIN
         else -> null
     }
 }

@@ -10,19 +10,44 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
+//TODO Quitar comentarios
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = YellowPrimary,        // Amarillo principal
+    onPrimary = Color.Black,        // Texto sobre amarillo
+
+    secondary = BlueSecondary,      // Azul secundario
+    onSecondary = Color.White,
+
+    tertiary = MyBookingPurple,     // Morado (por ejemplo para FAB, cosas destacadas)
+    onTertiary = Color.White,
+
+    background = BackgroundLight,   // Fondo app
+    onBackground = Color(0xFF212121),
+
+    surface = SurfaceLight,         // Tarjetas, panels
+    onSurface = Color(0xFF212121)
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = YellowPrimary,        // Amarillo principal
+    onPrimary = Color.Black,        // Texto sobre amarillo
+
+    secondary = BlueSecondary,      // Azul secundario
+    onSecondary = Color.White,
+
+    tertiary = MyBookingPurple,     // Morado (por ejemplo para FAB, cosas destacadas)
+    onTertiary = Color.White,
+
+    background = BackgroundLight,   // Fondo app
+    onBackground = Color(0xFF212121),
+
+    surface = SurfaceLight,         // Tarjetas, panels
+    onSurface = Color(0xFF212121)
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

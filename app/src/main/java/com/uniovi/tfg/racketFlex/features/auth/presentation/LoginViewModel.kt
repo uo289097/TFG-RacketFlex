@@ -1,6 +1,9 @@
 package com.uniovi.tfg.racketFlex.features.auth.presentation
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
@@ -19,6 +22,9 @@ class LoginViewModel(
 
     private val _uiState = MutableStateFlow<LoginState>(LoginState.Idle)
     val uiState: StateFlow<LoginState> = _uiState
+    var showResetDialog by mutableStateOf(false)
+    var resetEmailSent by mutableStateOf(false)
+
 
     fun login(username: String, password: String) {
         if (username.isBlank() || password.isBlank()) {
@@ -32,10 +38,9 @@ class LoginViewModel(
             val success = authRepository.login(username, password)
 
             if (success) {
-                Log.d("club", username)
                 val user = firestore.getUser(username)
-                Log.d("club", user.toString())
-                val modulesRaw = firestore.getClubModules(user!!.club)      // TODO GESTIONAR NULL
+                val modulesRaw =
+                    firestore.getClubModules(user!!.club, user)      // TODO GESTIONAR NULL
                 val modules = modulesRaw.mapNotNull { it.toClubModule() }
                 _uiState.value = LoginState.Success(
                     user = user,
@@ -46,5 +51,16 @@ class LoginViewModel(
                 _uiState.value = LoginState.Error("Credenciales incorrectas")
             }
         }
+    }
+
+    fun sendPasswordReset(email: String) {
+        viewModelScope.launch {
+            val success = authRepository.sendPasswordReset(email)
+            resetEmailSent = success
+        }
+    }
+
+    fun resetState() {
+        _uiState.value = LoginState.Idle
     }
 }

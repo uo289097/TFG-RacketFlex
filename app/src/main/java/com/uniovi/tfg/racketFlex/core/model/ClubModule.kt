@@ -2,6 +2,9 @@ package com.uniovi.tfg.racketFlex.core.model
 
 enum class ClubModule {
     RESERVAS,
-    PARTIDOS,
+    MATCHES,
+    COURSES,
+    COMPETITIONS,
     RANKING,
+    ADMIN
 }
