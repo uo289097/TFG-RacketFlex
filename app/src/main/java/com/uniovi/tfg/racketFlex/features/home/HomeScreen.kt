@@ -76,7 +76,10 @@ fun HomeScreen(
             when (selectedModule) {
                 ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
                 ClubModule.MATCHES -> MatchesScreen()
-                else -> Text("Módulo no implementado")
+                ClubModule.COURSES -> Text("Módulo no implementado")
+                ClubModule.COMPETITIONS -> Text("Módulo no implementado")
+                ClubModule.RANKING -> Text("Módulo no implementado")
+                ClubModule.ADMIN -> Text("Módulo no implementado")
             }
         }
     }

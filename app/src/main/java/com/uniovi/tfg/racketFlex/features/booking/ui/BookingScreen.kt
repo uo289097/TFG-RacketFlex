@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.Court
@@ -85,7 +84,14 @@ fun BookingScreen(
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedDay == day) Color.Blue else Color.Gray
+                        containerColor =
+                            if (viewModel.selectedDay == day)
+                                MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.surface,
+                        contentColor =
+                            if (viewModel.selectedDay == day)
+                                MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier
                         .weight(1f)
@@ -120,7 +126,14 @@ fun BookingScreen(
                     onClick = { viewModel.selectSport(sport) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedSport == sport) Color.Blue else Color.Gray
+                        containerColor =
+                            if (viewModel.selectedSport == sport)
+                                MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.secondary,
+                        contentColor =
+                            if (viewModel.selectedSport == sport)
+                                MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Text(sport.name)
@@ -140,7 +153,14 @@ fun BookingScreen(
                     onClick = { viewModel.selectCourt(court) },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.selectedCourt == court) Color.Green else Color.LightGray
+                        containerColor =
+                            if (viewModel.selectedCourt == court)
+                                MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.secondary,
+                        contentColor =
+                            if (viewModel.selectedCourt == court)
+                                MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Text(court.id)
@@ -195,8 +215,10 @@ fun BookingScreen(
                             },
                             enabled = !reserved,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Green
-                            ),
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+
+                                ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 2.dp)
