@@ -1,5 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,6 +48,7 @@ fun BookingScreen(
     clubId: String, user: User,
 ) {
     val viewModel: BookingViewModel = viewModel(
+        key = clubId,
         factory = BookingViewModelFactory(clubId)
     )
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
@@ -66,7 +68,7 @@ fun BookingScreen(
     }
     var pendingBooking by remember { mutableStateOf<Triple<Court, Long, Long>?>(null) }
     var showLimitDialog by remember { mutableStateOf(false) }
-
+    
 
     Column(
         modifier = Modifier
@@ -74,100 +76,18 @@ fun BookingScreen(
             .padding(16.dp)
     ) {
         // --- Calendario de días ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            days.forEach { day ->
-                Button(
-                    onClick = { viewModel.selectDay(day) },
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(4.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor =
-                            if (viewModel.selectedDay == day)
-                                MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.surface,
-                        contentColor =
-                            if (viewModel.selectedDay == day)
-                                MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(0.8f)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = day.dayOfWeek.getDisplayName(
-                                TextStyle.SHORT,
-                                Locale.forLanguageTag("es")
-                            ).uppercase(),
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Text(
-                            text = day.dayOfMonth.toString(),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
-            }
-        }
+        DayCalendar(days, viewModel)
 
         Spacer(Modifier.height(16.dp))
 
         // --- Selector de deporte ---
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Sport.entries.forEach { sport ->
-                Button(
-                    onClick = { viewModel.selectSport(sport) },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor =
-                            if (viewModel.selectedSport == sport)
-                                MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.secondary,
-                        contentColor =
-                            if (viewModel.selectedSport == sport)
-                                MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onSecondary
-                    )
-                ) {
-                    Text(sport.name)
-                }
-            }
-        }
+        SportSelector(viewModel)
 
         Spacer(Modifier.height(16.dp))
 
         // --- Selector de pista ---
         if (viewModel.selectedSport != null) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                viewModel.courts.forEach { court ->
-                    Button(
-                        onClick = { viewModel.selectCourt(court) },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor =
-                                if (viewModel.selectedCourt == court)
-                                    MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.secondary,
-                            contentColor =
-                                if (viewModel.selectedCourt == court)
-                                    MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.onSecondary
-                        )
-                    ) {
-                        Text(court.id)
-                    }
-                }
-            }
+            CourtSelector(viewModel)
         }
 
         Spacer(Modifier.height(16.dp))
@@ -175,73 +95,13 @@ fun BookingScreen(
 
         // --- Slots de reservas ---
         if (viewModel.selectedCourt != null) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val filteredCourts = viewModel.courts.filter {
-                    viewModel.selectedCourt == null || it == viewModel.selectedCourt
-                }
-
-                filteredCourts.forEach { court ->
-
-                    // Cabecera de cada pista
-                    item(key = "header_${court.id}") {      //TODO Key necesario?
-                        Text(
-                            text = "Pista: ${court.id}",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-
-                    // Slots horarios de esa pista
-                    items(
-                        items = slots,
-                        key = { slot -> "slot_${court.id}_$slot" }
-                    ) { slot ->
-
-                        val initTime = viewModel.selectedDay.atTime(slot)
-                            .atZone(ZoneId.systemDefault())
-                            .toInstant()
-                            .toEpochMilli()
-
-                        val endTime = initTime + slotDuration.toMillis()
-
-                        val reserved = viewModel.isReserved(court, initTime, endTime)
-
-                        Button(
-                            onClick = {
-                                if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
-                                    showLimitDialog = true
-                                } else {
-                                    pendingBooking = Triple(court, initTime, endTime)
-                                }
-                            },
-                            enabled = !reserved,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onSecondary,
-
-                                ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp)
-                        ) {
-                            val endLocalTime = slot.plus(slotDuration)
-                            Text(
-                                "${slot.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
-                                    endLocalTime.format(
-                                        DateTimeFormatter.ofPattern("HH:mm")
-                                    )
-                                }"
-                            )
-                        }
-                    }
-
-                    // Spacer entre pistas
-                    item(key = "spacer_${court.id}") {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-            }
+            BookingSlot(
+                viewModel,
+                slots,
+                user,
+                slotDuration,
+                onShowLimitDialog = { showLimitDialog = true },
+                onPendingBooking = { pendingBooking = it })
         }
         pendingBooking?.let { (court, initTime, endTime) ->
             ConfirmBookingDialog(
@@ -322,4 +182,179 @@ private fun DailyLimitDialog(onDismiss: () -> Unit) {
             }
         }
     )
+}
+
+@Composable
+private fun DayCalendar(days: List<LocalDate>, viewModel: BookingViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        days.forEach { day ->
+            Button(
+                onClick = { viewModel.selectDay(day) },
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor =
+                        if (viewModel.selectedDay == day)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.surface,
+                    contentColor =
+                        if (viewModel.selectedDay == day)
+                            MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSurface
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(0.8f)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = day.dayOfWeek.getDisplayName(
+                            TextStyle.SHORT,
+                            Locale.forLanguageTag("es")
+                        ).uppercase(),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Text(
+                        text = day.dayOfMonth.toString(),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SportSelector(viewModel: BookingViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Sport.entries.forEach { sport ->
+            Button(
+                onClick = { viewModel.selectSport(sport) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor =
+                        if (viewModel.selectedSport == sport)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.secondary,
+                    contentColor =
+                        if (viewModel.selectedSport == sport)
+                            MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Text(sport.name)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CourtSelector(viewModel: BookingViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        viewModel.courts.forEach { court ->
+            Button(
+                onClick = { viewModel.selectCourt(court) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor =
+                        if (viewModel.selectedCourt == court)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.secondary,
+                    contentColor =
+                        if (viewModel.selectedCourt == court)
+                            MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Text(court.id)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BookingSlot(
+    viewModel: BookingViewModel,
+    slots: MutableList<LocalTime>,
+    user: User,
+    slotDuration: Duration,
+    onShowLimitDialog: () -> Unit,
+    onPendingBooking: (Triple<Court, Long, Long>) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val filteredCourts = viewModel.courts.filter {
+            viewModel.selectedCourt == null || it == viewModel.selectedCourt
+        }
+
+        filteredCourts.forEach { court ->
+
+            // Cabecera de cada pista
+            item(key = "header_${court.id}") {      //TODO Key necesario?
+                Text(
+                    text = "Pista: ${court.id}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            // Slots horarios de esa pista
+            items(
+                items = slots,
+                key = { slot -> "slot_${court.id}_$slot" }
+            ) { slot ->
+
+                val initTime = viewModel.selectedDay.atTime(slot)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                val endTime = initTime + slotDuration.toMillis()
+
+                val reserved = viewModel.isReserved(court, initTime, endTime)
+
+                Button(
+                    onClick = {
+                        if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
+                            onShowLimitDialog()
+                        } else {
+                            onPendingBooking(Triple(court, initTime, endTime))
+                        }
+                    },
+                    enabled = !reserved,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+
+                        ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                ) {
+                    val endLocalTime = slot.plus(slotDuration)
+                    Text(
+                        "${slot.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
+                            endLocalTime.format(
+                                DateTimeFormatter.ofPattern("HH:mm")
+                            )
+                        }"
+                    )
+                }
+            }
+
+            // Spacer entre pistas
+            item(key = "spacer_${court.id}") {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+    }
 }
