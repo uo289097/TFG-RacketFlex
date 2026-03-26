@@ -1,19 +1,13 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,14 +27,18 @@ import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModelFactory
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.BookingSlots
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.ConfirmBookingDialog
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.CourtSelector
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.DailyLimitDialog
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.DaySelector
+import com.uniovi.tfg.racketFlex.features.booking.ui.components.SportSelector
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun BookingScreen(
@@ -68,7 +65,7 @@ fun BookingScreen(
     }
     var pendingBooking by remember { mutableStateOf<Triple<Court, Long, Long>?>(null) }
     var showLimitDialog by remember { mutableStateOf(false) }
-    
+
 
     Column(
         modifier = Modifier
@@ -76,7 +73,7 @@ fun BookingScreen(
             .padding(16.dp)
     ) {
         // --- Calendario de días ---
-        DayCalendar(days, viewModel)
+        DaySelector(days, viewModel)
 
         Spacer(Modifier.height(16.dp))
 
@@ -95,7 +92,7 @@ fun BookingScreen(
 
         // --- Slots de reservas ---
         if (viewModel.selectedCourt != null) {
-            BookingSlot(
+            BookingSlots(
                 viewModel,
                 slots,
                 user,
@@ -123,238 +120,4 @@ fun BookingScreen(
         }
     }
 
-}
-
-@Composable
-private fun ConfirmBookingDialog(
-    court: Court,
-    initTime: Long,
-    endTime: Long,
-    selectedDay: LocalDate,
-    selectedSport: Sport?,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    val initLocalTime = Instant.ofEpochMilli(initTime)
-        .atZone(ZoneId.systemDefault())
-        .toLocalTime()
-    val endLocalTime = Instant.ofEpochMilli(endTime)
-        .atZone(ZoneId.systemDefault())
-        .toLocalTime()
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Confirmar reserva") },
-        text = {
-            Column {
-                Text("¿Estás seguro de que quieres reservar la pista con los siguientes datos?")
-                Spacer(Modifier.height(8.dp))
-                Text("Pista: ${court.id}")
-                Text("Deporte: ${selectedSport?.name}")
-                Text("Día: $selectedDay")
-                Text(
-                    "Hora: ${initLocalTime.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
-                        endLocalTime.format(
-                            DateTimeFormatter.ofPattern("HH:mm")
-                        )
-                    }"
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = onConfirm) { Text("Aceptar") }
-        },
-        dismissButton = {
-            OutlinedButton(onClick = onDismiss) { Text("Cancelar") }
-        }
-    )
-}
-
-@Composable
-private fun DailyLimitDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Límite alcanzado") },
-        text = { Text("No puedes realizar más de 2 reservas en el mismo día.") },
-        confirmButton = {
-            Button(onClick = onDismiss) {
-                Text("Entendido")
-            }
-        }
-    )
-}
-
-@Composable
-private fun DayCalendar(days: List<LocalDate>, viewModel: BookingViewModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        days.forEach { day ->
-            Button(
-                onClick = { viewModel.selectDay(day) },
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor =
-                        if (viewModel.selectedDay == day)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.surface,
-                    contentColor =
-                        if (viewModel.selectedDay == day)
-                            MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurface
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(0.8f)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = day.dayOfWeek.getDisplayName(
-                            TextStyle.SHORT,
-                            Locale.forLanguageTag("es")
-                        ).uppercase(),
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Text(
-                        text = day.dayOfMonth.toString(),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SportSelector(viewModel: BookingViewModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Sport.entries.forEach { sport ->
-            Button(
-                onClick = { viewModel.selectSport(sport) },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor =
-                        if (viewModel.selectedSport == sport)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.secondary,
-                    contentColor =
-                        if (viewModel.selectedSport == sport)
-                            MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSecondary
-                )
-            ) {
-                Text(sport.name)
-            }
-        }
-    }
-}
-
-@Composable
-private fun CourtSelector(viewModel: BookingViewModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        viewModel.courts.forEach { court ->
-            Button(
-                onClick = { viewModel.selectCourt(court) },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor =
-                        if (viewModel.selectedCourt == court)
-                            MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.secondary,
-                    contentColor =
-                        if (viewModel.selectedCourt == court)
-                            MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSecondary
-                )
-            ) {
-                Text(court.id)
-            }
-        }
-    }
-}
-
-@Composable
-private fun BookingSlot(
-    viewModel: BookingViewModel,
-    slots: MutableList<LocalTime>,
-    user: User,
-    slotDuration: Duration,
-    onShowLimitDialog: () -> Unit,
-    onPendingBooking: (Triple<Court, Long, Long>) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val filteredCourts = viewModel.courts.filter {
-            viewModel.selectedCourt == null || it == viewModel.selectedCourt
-        }
-
-        filteredCourts.forEach { court ->
-
-            // Cabecera de cada pista
-            item(key = "header_${court.id}") {      //TODO Key necesario?
-                Text(
-                    text = "Pista: ${court.id}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            // Slots horarios de esa pista
-            items(
-                items = slots,
-                key = { slot -> "slot_${court.id}_$slot" }
-            ) { slot ->
-
-                val initTime = viewModel.selectedDay.atTime(slot)
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
-
-                val endTime = initTime + slotDuration.toMillis()
-
-                val reserved = viewModel.isReserved(court, initTime, endTime)
-
-                Button(
-                    onClick = {
-                        if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
-                            onShowLimitDialog()
-                        } else {
-                            onPendingBooking(Triple(court, initTime, endTime))
-                        }
-                    },
-                    enabled = !reserved,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-
-                        ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                ) {
-                    val endLocalTime = slot.plus(slotDuration)
-                    Text(
-                        "${slot.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
-                            endLocalTime.format(
-                                DateTimeFormatter.ofPattern("HH:mm")
-                            )
-                        }"
-                    )
-                }
-            }
-
-            // Spacer entre pistas
-            item(key = "spacer_${court.id}") {
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-        }
-    }
 }
