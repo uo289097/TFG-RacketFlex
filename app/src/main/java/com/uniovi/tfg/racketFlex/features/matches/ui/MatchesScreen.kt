@@ -21,7 +21,7 @@ import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.SearchMatchesTab
 fun MatchesScreen(clubId: String, user: User) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val viewModel: MatchesViewModel = viewModel(
-        key = clubId,
+        key = user.email,
         factory = MatchesViewModelFactory(clubId)
     )
 

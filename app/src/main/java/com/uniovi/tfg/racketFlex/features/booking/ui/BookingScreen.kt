@@ -45,7 +45,7 @@ fun BookingScreen(
     clubId: String, user: User,
 ) {
     val viewModel: BookingViewModel = viewModel(
-        key = clubId,
+        key = user.email,
         factory = BookingViewModelFactory(clubId)
     )
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }

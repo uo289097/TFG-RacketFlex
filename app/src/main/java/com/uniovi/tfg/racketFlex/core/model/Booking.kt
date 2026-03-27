@@ -10,6 +10,7 @@ data class Booking(
 
 enum class BookingType {
     INDIVIDUAL,
+    MATCH,
     TOURNAMENT,
     COURSE
 }
