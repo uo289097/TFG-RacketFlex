@@ -8,15 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.google.firebase.Timestamp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
@@ -108,11 +104,34 @@ fun MatchCard(
                 }
             }
 
+
+
             Column(horizontalAlignment = Alignment.End) {
 
                 Text(dateText, style = MaterialTheme.typography.bodyMedium)
+
                 if (match.score.isNotEmpty()) {
-                    //TODO CAMBIAR PARA RESULTADO, ETC
+                    Column(horizontalAlignment = Alignment.End) {
+                        Row {
+                            match.score.forEach {
+                                Text(
+                                    it.player1.toString(),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Spacer(Modifier.width(8.dp))
+                            }
+                        }
+                        HorizontalDivider(color = Color.Gray, modifier = Modifier.width(60.dp))
+                        Row {
+                            match.score.forEach {
+                                Text(
+                                    it.player2.toString(),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Spacer(Modifier.width(8.dp))
+                            }
+                        }
+                    }
                 } else {
                     Text(
                         "${match.players.count { it.isNotBlank() }}/${match.maxPlayers} jugadores",
