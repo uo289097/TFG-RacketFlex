@@ -9,5 +9,12 @@ data class Match(
     val initDate: Long,
     val maxPlayers: Int,
     val players: List<String>,
-    val sport: Sport
+    val sport: Sport,
+    val score: List<SetScore>
+)
+
+
+data class SetScore(
+    val player1: Int,
+    val player2: Int
 )

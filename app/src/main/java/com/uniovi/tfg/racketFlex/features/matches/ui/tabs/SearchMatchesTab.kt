@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
-import com.uniovi.tfg.racketFlex.features.matches.ui.components.SearchMatchCard
+import com.uniovi.tfg.racketFlex.features.matches.ui.components.MatchCard
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.SportSelectorMatches
 
 @Composable
@@ -37,9 +37,12 @@ fun SearchMatchesTab(
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(viewModel.matches, key = { it.id }) { match ->
-                SearchMatchCard(match = match, user = user, onJoin = { index ->
-                    viewModel.joinMatch(match.id, user.email, index)
-                })
+                MatchCard(
+                    match = match,
+                    user = user,
+                    onJoin = { index -> viewModel.joinMatch(match.id, user.email, index) },
+                    onAddScore = { score -> viewModel.addScore(match.id, score, user.email) }
+                )
             }
         }
     }

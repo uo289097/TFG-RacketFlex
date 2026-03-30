@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
+import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
 import kotlinx.coroutines.tasks.await
 
 class MatchesRepositoryImpl(
@@ -28,7 +29,13 @@ class MatchesRepositoryImpl(
                 initDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
                 maxPlayers = doc.getLong("max_players")?.toInt() ?: 0,
                 players = doc.get("players") as? List<String> ?: emptyList(),
-                sport = sport
+                sport = sport,
+                score = (doc.get("score") as? List<Map<String, Long>>)?.map {
+                    SetScore(
+                        player1 = it["player1"]?.toInt() ?: 0,
+                        player2 = it["player2"]?.toInt() ?: 0
+                    )
+                } ?: emptyList()
             )
 
         }
@@ -72,8 +79,24 @@ class MatchesRepositoryImpl(
                 initDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
                 maxPlayers = doc.getLong("max_players")?.toInt() ?: 0,
                 players = doc.get("players") as? List<String> ?: emptyList(),
-                sport = sport
+                sport = sport,
+                score = (doc.get("score") as? List<Map<String, Long>>)?.map {
+                    SetScore(
+                        player1 = it["player1"]?.toInt() ?: 0,
+                        player2 = it["player2"]?.toInt() ?: 0
+                    )
+                } ?: emptyList()
             )
         }
+    }
+
+    override suspend fun addScore(clubId: String, matchId: String, score: List<SetScore>) {
+        val scoreData = score.map { mapOf("player1" to it.player1, "player2" to it.player2) }
+        db.collection("clubs")
+            .document(clubId)
+            .collection("matches")
+            .document(matchId)
+            .update("score", scoreData)
+            .await()
     }
 }

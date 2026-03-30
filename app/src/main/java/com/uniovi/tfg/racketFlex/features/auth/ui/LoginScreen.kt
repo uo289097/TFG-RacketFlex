@@ -119,10 +119,9 @@ fun LoginScreen(
                     )
                 }
 
-                // TODO ???
                 is LoginState.Success -> {
                     val data = uiState as LoginState.Success
-                    LaunchedEffect(uiState) {  // se ejecuta solo cuando uiState cambia a Success
+                    LaunchedEffect(uiState) {
                         navigateToHome(data.user, data.modules)
                     }
                 }

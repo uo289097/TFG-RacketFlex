@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.matches.ui.tabs
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
-import com.uniovi.tfg.racketFlex.features.matches.ui.components.SearchMatchCard
+import com.uniovi.tfg.racketFlex.features.matches.ui.components.MatchCard
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.SportSelectorMatches
 
 @Composable
@@ -39,7 +38,12 @@ fun MyMatchesTab(
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(viewModel.userMatches, key = { it.id }) { match ->
-                SearchMatchCard(match = match, user = user, onJoin = {})
+                MatchCard(
+                    match = match,
+                    user = user,
+                    onJoin = {},
+                    onAddScore = { score -> viewModel.addScore(match.id, score, user.email) }
+                )
             }
         }
     }

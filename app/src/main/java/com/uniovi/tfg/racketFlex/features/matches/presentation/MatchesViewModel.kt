@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Sport
-import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import com.uniovi.tfg.racketFlex.features.matches.data.MatchesRepositoryImpl
 import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
+import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
 import kotlinx.coroutines.launch
 
 class MatchesViewModel(
@@ -46,6 +46,14 @@ class MatchesViewModel(
             userMatches = repository.getUserMatches(clubId, sport, userId)
         }
 
+    }
+
+    fun addScore(matchId: String, score: List<SetScore>, userId: String) {
+        viewModelScope.launch {
+            repository.addScore(clubId, matchId, score)
+            loadMatches()
+            loadUserMatches(userId)
+        }
     }
 
     fun isUserInMatch(match: Match, userId: String) = userId in match.players
