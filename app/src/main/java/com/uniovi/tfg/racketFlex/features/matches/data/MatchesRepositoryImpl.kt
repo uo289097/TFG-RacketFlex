@@ -1,7 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.matches.data
 
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
@@ -31,6 +30,7 @@ class MatchesRepositoryImpl(
                 players = doc.get("players") as? List<String> ?: emptyList(),
                 sport = sport
             )
+
         }
     }
 
@@ -43,7 +43,7 @@ class MatchesRepositoryImpl(
             .await()
 
         val players = (doc.get("players") as? List<String>)?.toMutableList() ?: return
-        if (players[index].isNotBlank()) return // ya ocupado por si acaso
+        if (players[index].isNotBlank()) return
 
         players[index] = userId
 
@@ -53,5 +53,27 @@ class MatchesRepositoryImpl(
             .document(matchId)
             .update("players", players)
             .await()
+    }
+
+    override suspend fun getUserMatches(clubId: String, sport: Sport, userId: String): List<Match> {
+        val snapshot = db.collection("clubs")
+            .document(clubId)
+            .collection("matches")
+            .whereEqualTo("sport", sport.name.lowercase())
+            .whereArrayContains("players", userId)
+            .get()
+            .await()
+
+        return snapshot.documents.map { doc ->
+            Match(
+                id = doc.id,
+                bookingId = doc.getString("booking_id") ?: "",
+                createdBy = doc.getString("created_by") ?: "",
+                initDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
+                maxPlayers = doc.getLong("max_players")?.toInt() ?: 0,
+                players = doc.get("players") as? List<String> ?: emptyList(),
+                sport = sport
+            )
+        }
     }
 }

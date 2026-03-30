@@ -18,17 +18,18 @@ class MatchesViewModel(
     private val clubId: String,
     private val repository: MatchesRepository = MatchesRepositoryImpl(FirebaseFirestore.getInstance())
 ) : ViewModel() {
-    var selectedSport by mutableStateOf(Sport.TENIS)
+    var selectedSport by mutableStateOf<Sport?>(null)
     var matches by mutableStateOf<List<Match>>(emptyList())
+    var userMatches by mutableStateOf<List<Match>>(emptyList())
 
     fun selectSport(sport: Sport) {
         selectedSport = sport
-        loadMatches()
     }
 
-    private fun loadMatches() {
+    fun loadMatches() {
+        val sport = selectedSport ?: return
         viewModelScope.launch {
-            matches = repository.getMatches(clubId, selectedSport)
+            matches = repository.getMatches(clubId, sport)
         }
     }
 
@@ -37,6 +38,14 @@ class MatchesViewModel(
             repository.joinMatch(clubId, matchId, userId, index)
             loadMatches()
         }
+    }
+
+    fun loadUserMatches(userId: String) {
+        val sport = selectedSport ?: return
+        viewModelScope.launch {
+            userMatches = repository.getUserMatches(clubId, sport, userId)
+        }
+
     }
 
     fun isUserInMatch(match: Match, userId: String) = userId in match.players
