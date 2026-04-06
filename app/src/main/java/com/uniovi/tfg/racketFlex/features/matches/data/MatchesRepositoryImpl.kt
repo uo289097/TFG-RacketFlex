@@ -6,6 +6,7 @@ import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
+import com.uniovi.tfg.racketFlex.features.matches.domain.entities.TennisMatchType
 import kotlinx.coroutines.tasks.await
 
 class MatchesRepositoryImpl(
@@ -99,4 +100,24 @@ class MatchesRepositoryImpl(
             .update("score", scoreData)
             .await()
     }
+
+    override suspend fun createMatch(
+        clubId: String,
+        userId: String,
+        match: Match
+    ) {
+        /*val data = hashMapOf(
+            "booker_id" to booking.bookerId,
+            "court" to booking.court,
+            "init_date" to Timestamp(booking.initDate / 1000, 0),
+            "end_date" to Timestamp(booking.endDate / 1000, 0),
+            "type" to booking.type.name.lowercase()
+        )
+        db.collection("clubs")
+            .document(clubId)
+            .collection("bookings")
+            .add(data)
+            .await()*/
+    }
+
 }

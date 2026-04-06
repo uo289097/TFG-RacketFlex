@@ -30,6 +30,7 @@ class RegisterClubViewModel(
     var slotDuration by mutableStateOf("")
 
     // Step 2
+    var adminName by mutableStateOf("")
     var adminEmail by mutableStateOf("")
     var adminPassword by mutableStateOf("")
 
@@ -56,7 +57,7 @@ class RegisterClubViewModel(
                     numberPadel = padelCourts.toIntOrNull() ?: 0
                 )
 
-                registerRepository.createUser(adminEmail, clubName)
+                registerRepository.createUser(adminEmail, clubName, adminName)
 
                 _uiState.value = RegisterState.Success
 

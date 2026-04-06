@@ -2,7 +2,9 @@ package com.uniovi.tfg.racketFlex.features.booking.data
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.Booking
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
@@ -77,5 +79,33 @@ class BookingRepositoryImpl(
             .collection("bookings")
             .add(data)
             .await()
+    }
+
+    override suspend fun createMatchBooking(clubId: String, booking: Booking): String {
+        val data = hashMapOf(
+            "booker_id" to booking.bookerId,
+            "court" to booking.court,
+            "init_date" to Timestamp(booking.initDate / 1000, 0),
+            "end_date" to Timestamp(booking.endDate / 1000, 0),
+            "type" to booking.type.name.lowercase()
+        )
+        val reserva = db.collection("clubs")
+            .document(clubId)
+            .collection("bookings")
+            .add(data)
+            .await()
+        return reserva.id
+    }
+
+    override suspend fun getBookingInfo(clubId: String): BookingInfo {
+        val snapshot = db.collection("clubs")
+            .document(clubId)
+            .get()
+            .await()
+        return BookingInfo(
+            snapshot.getField<Int>("booking_duration") ?: 0,
+            snapshot.getField<Int>("open_time") ?: 0,
+            snapshot.getField<Int>("close_time") ?: 0
+        )
     }
 }

@@ -14,3 +14,9 @@ enum class BookingType {
     TOURNAMENT,
     COURSE
 }
+
+data class BookingInfo(
+    val booking_duration: Int,
+    val open_time: Int,
+    val close_time: Int
+)

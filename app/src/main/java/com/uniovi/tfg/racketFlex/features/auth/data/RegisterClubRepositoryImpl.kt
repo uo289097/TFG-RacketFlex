@@ -29,12 +29,13 @@ class RegisterClubRepositoryImpl(
         ).await()
     }
 
-    override suspend fun createUser(email: String, club: String) {
+    override suspend fun createUser(email: String, club: String, name: String) {
         db.collection("users").document(email).set(
             hashMapOf(
                 "email" to email,
                 "club" to club,
-                "rol" to "admin"
+                "rol" to "admin",
+                "name" to name
             )
         ).await()
     }

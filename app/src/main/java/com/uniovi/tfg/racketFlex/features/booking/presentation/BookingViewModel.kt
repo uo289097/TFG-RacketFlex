@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,7 +28,22 @@ class BookingViewModel(
     var selectedCourt by mutableStateOf<Court?>(null)
     var courts by mutableStateOf<List<Court>>(emptyList())
     var bookings by mutableStateOf<List<Booking>>(emptyList())
+    var bookingDuration by mutableIntStateOf(0)
+    var openTime by mutableIntStateOf(0)
+    var closeTime by mutableIntStateOf(0)
 
+    init {
+        getBookingInfo()
+    }
+
+    fun getBookingInfo() {
+        viewModelScope.launch {
+            val bookingInfo = repository.getBookingInfo(clubId)
+            bookingDuration = bookingInfo.booking_duration
+            openTime = bookingInfo.open_time
+            closeTime = bookingInfo.close_time
+        }
+    }
 
     fun selectDay(day: LocalDate) {
         selectedDay = day

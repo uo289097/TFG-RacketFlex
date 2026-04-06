@@ -18,3 +18,7 @@ data class SetScore(
     val player1: Int,
     val player2: Int
 )
+
+enum class TennisMatchType {
+    INDIVIDUAL, DOBLES
+}

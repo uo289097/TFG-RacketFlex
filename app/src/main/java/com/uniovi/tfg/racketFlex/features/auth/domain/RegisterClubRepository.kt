@@ -11,6 +11,6 @@ interface RegisterClubRepository {
         numberPadel: Int
     )
 
-    suspend fun createUser(email: String, club: String)
+    suspend fun createUser(email: String, club: String, name: String)
 
 }

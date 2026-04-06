@@ -26,7 +26,9 @@ fun RegisterClubStep2Screen(
     onNext: () -> Unit,
     onBack: () -> Unit
 ) {
-    val isValid = viewModel.adminEmail.isNotBlank() && viewModel.adminPassword.isNotBlank()
+    val isValid = viewModel.adminName.isNotBlank()
+            && viewModel.adminEmail.isNotBlank()
+            && viewModel.adminPassword.isNotBlank()
 
     Column(
         modifier = Modifier
@@ -37,6 +39,13 @@ fun RegisterClubStep2Screen(
         RegisterStepIndicator(currentStep = 2)
 
         //TODO AÑADIR NOMBRE
+        OutlinedTextField(
+            value = viewModel.adminName,
+            onValueChange = { viewModel.adminName = it },
+            label = { Text("Nombre admin") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier.fillMaxWidth()
+        )
 
         OutlinedTextField(
             value = viewModel.adminEmail,

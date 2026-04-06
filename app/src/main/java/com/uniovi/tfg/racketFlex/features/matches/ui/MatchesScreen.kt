@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModelFactory
+import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.CreateMatchTab
 import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.MyMatchesTab
 import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.SearchMatchesTab
 
@@ -41,7 +42,7 @@ fun MatchesScreen(clubId: String, user: User) {
         when (tabIndex) {
             0 -> SearchMatchesTab(clubId, user, viewModel)
             1 -> MyMatchesTab(clubId, user, viewModel)
-            2 -> Text("Crear partido")
+            2 -> CreateMatchTab(clubId, user, viewModel)
         }
     }
 

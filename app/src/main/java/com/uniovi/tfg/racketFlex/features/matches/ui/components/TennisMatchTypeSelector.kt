@@ -10,29 +10,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.uniovi.tfg.racketFlex.core.model.Sport
+import com.uniovi.tfg.racketFlex.features.matches.domain.entities.TennisMatchType
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
 
 @Composable
-fun SportSelectorMatches(viewModel: MatchesViewModel) {
+fun TennisMatchTypeSelector(viewModel : MatchesViewModel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Sport.entries.forEach { sport ->
+        TennisMatchType.entries.forEach { mt ->
             Button(
-                onClick = { viewModel.selectSport(sport) },
+                onClick = { viewModel.selectTennisMatchType(mt) },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (viewModel.selectedSport == sport)
+                    containerColor = if (viewModel.selectedTennisMatchType == mt)
                         MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.secondary,
-                    contentColor = if (viewModel.selectedSport == sport)
+                    contentColor = if (viewModel.selectedTennisMatchType == mt)
                         MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.onSecondary
                 )
             ) {
-                Text(sport.name)
+                Text(mt.name)
             }
         }
     }

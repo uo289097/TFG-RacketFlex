@@ -1,19 +1,11 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.Court
-import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModelFactory
@@ -34,11 +25,8 @@ import com.uniovi.tfg.racketFlex.features.booking.ui.components.DailyLimitDialog
 import com.uniovi.tfg.racketFlex.features.booking.ui.components.DaySelector
 import com.uniovi.tfg.racketFlex.features.booking.ui.components.SportSelector
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun BookingScreen(
@@ -49,15 +37,28 @@ fun BookingScreen(
         factory = BookingViewModelFactory(clubId)
     )
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
-    val slotDuration = Duration.ofMinutes(90) // 1h30min
-    val startHour = 10                              // TODO Coger info del club
-    val endHour = 22
+    val slotDuration = remember(viewModel.bookingDuration) {
+        Duration.ofMinutes(viewModel.bookingDuration.toLong())
+    }
+    val startHour = remember(viewModel.openTime) {
+        LocalTime.of(
+            viewModel.openTime / 60,
+            viewModel.openTime % 60
+        )
+    }
+
+    val endHour = remember(viewModel.closeTime) {
+        LocalTime.of(
+            viewModel.closeTime / 60,
+            viewModel.closeTime % 60
+        )
+
+    }
     val slots = remember(slotDuration, startHour, endHour) {
-        val start = LocalTime.of(startHour, 0)
-        val end = LocalTime.of(endHour, 0)
+        if (viewModel.bookingDuration == 0) return@remember mutableListOf()
         val result = mutableListOf<LocalTime>()
-        var current = start
-        while (current.plus(slotDuration) <= end) {
+        var current = startHour
+        while (current.plus(slotDuration) <= endHour) {
             result.add(current)
             current = current.plus(slotDuration)
         }
@@ -65,7 +66,6 @@ fun BookingScreen(
     }
     var pendingBooking by remember { mutableStateOf<Triple<Court, Long, Long>?>(null) }
     var showLimitDialog by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier
