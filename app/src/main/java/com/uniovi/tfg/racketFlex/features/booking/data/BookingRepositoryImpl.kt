@@ -120,11 +120,9 @@ class BookingRepositoryImpl(
         val prefix = if (sport == Sport.TENIS) "tenis" else "padel"
         val field = if (sport == Sport.TENIS) "number_tennis" else "number_padel"
 
-        // Obtener número de pistas del club
         val clubDoc = db.collection("clubs").document(clubId).get().await()
         val numCourts = clubDoc.getLong(field)?.toInt() ?: return null
 
-        // Obtener reservas que se solapan con el slot
         val startTimestamp = Timestamp(initDate / 1000, 0)
         val endTimestamp = Timestamp(endDate / 1000, 0)
         val snapshot = db.collection("clubs")
@@ -137,7 +135,6 @@ class BookingRepositoryImpl(
 
         val reservedCourts = snapshot.documents.mapNotNull { it.getString("court") }.toSet()
 
-        // Devolver primera pista libre
         for (i in 1..numCourts) {
             val courtId = "$prefix${i.toString().padStart(2, '0')}"
             if (courtId !in reservedCourts) return courtId

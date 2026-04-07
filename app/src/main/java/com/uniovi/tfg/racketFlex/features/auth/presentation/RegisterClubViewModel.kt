@@ -87,7 +87,7 @@ class RegisterClubViewModel(
             if (hour !in 0..23 || minute !in 0..59) return null
 
             hour * 60 + minute
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

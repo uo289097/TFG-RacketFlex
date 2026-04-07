@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Booking
 import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.core.model.Sport
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.booking.data.BookingRepositoryImpl
 import com.uniovi.tfg.racketFlex.features.booking.domain.BookingRepository
@@ -94,7 +95,7 @@ class MatchesViewModel(
         }
     }
 
-    fun createMatch(userId: String, initDate: Long, endDate: Long) {
+    fun createMatch(user: User, initDate: Long, endDate: Long, slots: List<LocalTime>) {
         val sport = selectedSport ?: return
         if (sport == Sport.TENIS && selectedTennisMatchType == null) return
 
@@ -109,7 +110,7 @@ class MatchesViewModel(
                 ?: return@launch
 
             val booking = Booking(
-                bookerId = userId,
+                bookerId = user.email,
                 court = court,
                 initDate = initDate,
                 endDate = endDate,
@@ -120,21 +121,22 @@ class MatchesViewModel(
             val match = Match(
                 id = "",
                 bookingId = bookingId,
-                createdBy = userId,
+                createdBy = user.email,
                 initDate = initDate,
                 maxPlayers = maxPlayers,
-                players = List(maxPlayers) { if (it == 0) userId else "" },
+                players = List(maxPlayers) { if (it == 0) user.email else "" },
                 sport = sport,
                 score = emptyList()
             )
 
             matchesRepository.createMatch(
                 clubId,
-                userId,
+                user.email,
                 match,
             )
             loadMatches()
-            loadUserMatches(userId)
+            loadUserMatches(user.email)
+            checkAvailability(user.email, user.role, slots)
         }
 
     }
@@ -155,9 +157,22 @@ class MatchesViewModel(
             val bookings = bookingRepository.getBookings(day, selectedSport!!, clubId)
 
             for (slot in slots) {
+                val zone = ZoneId.systemDefault()
+                val initDate = selectedDay!!.atTime(slot)
+                    .atZone(zone)
+                    .toInstant()
+                    .toEpochMilli()
+
+                val endDate = initDate + bookingDuration
 
                 val userLimitReached =
                     bookings.count { it.bookerId == userId } >= 2
+
+                val hasConflict = bookings.any {
+                    it.bookerId == userId &&
+                            it.initDate < endDate &&
+                            it.endDate > initDate
+                }
 
                 val isFull = when (selectedSport) {
                     Sport.TENIS -> bookings.count {
@@ -183,15 +198,12 @@ class MatchesViewModel(
                     else -> false
                 }
 
-                result[slot] = !(userLimitReached || isFull)
+                result[slot] = !(userLimitReached || isFull || hasConflict)
             }
 
             slotAvailability.value = result
         }
     }
-
-    fun isUserInMatch(match: Match, userId: String) = userId in match.players
-    fun isMatchFull(match: Match) = match.players.size >= match.maxPlayers
 
 
 }

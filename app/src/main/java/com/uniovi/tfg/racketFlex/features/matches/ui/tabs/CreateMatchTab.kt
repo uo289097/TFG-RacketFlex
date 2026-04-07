@@ -1,16 +1,10 @@
 package com.uniovi.tfg.racketFlex.features.matches.ui.tabs
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +22,6 @@ import com.uniovi.tfg.racketFlex.features.matches.ui.components.TennisMatchTypeS
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
 
 @Composable
 fun CreateMatchTab(
@@ -103,7 +96,7 @@ fun CreateMatchTab(
             items(slots) { slot ->
                 if (!(slot.isBefore(LocalTime.now()) && viewModel.selectedDay == LocalDate.now()))
                     SlotItem(
-                        userId = user.email,
+                        user = user,
                         slot = slot,
                         duration = slotDuration,
                         viewModel = viewModel,
@@ -111,7 +104,8 @@ fun CreateMatchTab(
                             false
                         } else {
                             availability[slot] ?: false
-                        }
+                        },
+                        slots = slots
                     )
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
 import java.time.Duration
 import java.time.LocalTime
@@ -14,11 +15,12 @@ import java.time.ZoneId
 
 @Composable
 fun SlotItem(
-    userId: String,
+    user: User,
     slot: LocalTime,
     duration: Duration,
     viewModel: MatchesViewModel,
-    enabled: Boolean
+    enabled: Boolean,
+    slots: MutableList<LocalTime>
 ) {
 
     val initTime = viewModel.selectedDay!!.atTime(slot)
@@ -31,7 +33,7 @@ fun SlotItem(
 
     Button(
         onClick = {
-            viewModel.createMatch(userId, initTime, endTime)
+            viewModel.createMatch(user, initTime, endTime, slots)
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
