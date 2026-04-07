@@ -16,7 +16,9 @@ class RegisterClubRepositoryImpl(
         modules: List<String>,
         slotDuration: Int,
         numberTennis: Int,
-        numberPadel: Int
+        numberPadel: Int,
+        openTime: Int,
+        closeTime: Int
     ) {
         db.collection("clubs").document(clubName).set(
             hashMapOf(
@@ -24,7 +26,9 @@ class RegisterClubRepositoryImpl(
                 "modulos" to modules,
                 "booking_duration" to slotDuration,
                 "number_tennis" to numberTennis,
-                "number_padel" to numberPadel
+                "number_padel" to numberPadel,
+                "open_time" to openTime,
+                "close_time" to closeTime
             )
         ).await()
     }

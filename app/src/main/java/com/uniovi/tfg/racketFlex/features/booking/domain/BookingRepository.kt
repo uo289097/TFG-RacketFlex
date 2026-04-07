@@ -11,4 +11,10 @@ interface BookingRepository {
     suspend fun createBooking(clubId: String, booking: Booking)
     suspend fun createMatchBooking(clubId: String, booking: Booking): String
     suspend fun getBookingInfo(clubId: String): BookingInfo
+    suspend fun getFirstAvailableCourt(
+        clubId: String,
+        sport: Sport,
+        initDate: Long,
+        endDate: Long
+    ): String?
 }

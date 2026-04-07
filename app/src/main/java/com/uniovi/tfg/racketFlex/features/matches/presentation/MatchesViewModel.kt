@@ -19,8 +19,12 @@ import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.TennisMatchType
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 
 class MatchesViewModel(
     private val clubId: String,
@@ -35,6 +39,9 @@ class MatchesViewModel(
     var bookingDuration by mutableIntStateOf(0)
     var openTime by mutableIntStateOf(0)
     var closeTime by mutableIntStateOf(0)
+    var numberTennis by mutableIntStateOf(0)
+    var numberPadel by mutableIntStateOf(0)
+    val slotAvailability = MutableStateFlow<Map<LocalTime, Boolean>>(emptyMap())
 
     init {
         getBookingInfo()
@@ -46,6 +53,9 @@ class MatchesViewModel(
             bookingDuration = bookingInfo.booking_duration
             openTime = bookingInfo.open_time
             closeTime = bookingInfo.close_time
+            numberTennis = bookingInfo.number_tennis
+            numberPadel = bookingInfo.number_padel
+
         }
     }
 
@@ -84,7 +94,7 @@ class MatchesViewModel(
         }
     }
 
-    fun createMatch(userId: String) {
+    fun createMatch(userId: String, initDate: Long, endDate: Long) {
         val sport = selectedSport ?: return
         if (sport == Sport.TENIS && selectedTennisMatchType == null) return
 
@@ -95,11 +105,14 @@ class MatchesViewModel(
                 else -> 4
             }
 
+            val court = bookingRepository.getFirstAvailableCourt(clubId, sport, initDate, endDate)
+                ?: return@launch
+
             val booking = Booking(
                 bookerId = userId,
-                court = "tenis01",                  //TODO Implementar
-                initDate = 0L,                      //TODO Implementar
-                endDate = 0L,                       //TODO Implementar
+                court = court,
+                initDate = initDate,
+                endDate = endDate,
                 type = BookingType.MATCH
             )
             val bookingId = bookingRepository.createMatchBooking(clubId, booking)
@@ -108,7 +121,7 @@ class MatchesViewModel(
                 id = "",
                 bookingId = bookingId,
                 createdBy = userId,
-                initDate = 0L,                      //TODO Implementar
+                initDate = initDate,
                 maxPlayers = maxPlayers,
                 players = List(maxPlayers) { if (it == 0) userId else "" },
                 sport = sport,
@@ -120,8 +133,10 @@ class MatchesViewModel(
                 userId,
                 match,
             )
-            //loadMatches()
+            loadMatches()
+            loadUserMatches(userId)
         }
+
     }
 
     fun addScore(matchId: String, score: List<SetScore>, userId: String) {
@@ -132,10 +147,47 @@ class MatchesViewModel(
         }
     }
 
-    fun hasReachedDailyLimit(userId: String, userRole: UserRole, limit: Int = 2): Boolean {
-        if (userRole == UserRole.ADMIN) return false
-        return true
-        //return bookings.count { it.bookerId == userId } >= limit
+    fun checkAvailability(userId: String, userRole: UserRole, slots: List<LocalTime>) {
+        viewModelScope.launch {
+            val result = mutableMapOf<LocalTime, Boolean>()
+
+            val day = selectedDay!!.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val bookings = bookingRepository.getBookings(day, selectedSport!!, clubId)
+
+            for (slot in slots) {
+
+                val userLimitReached =
+                    bookings.count { it.bookerId == userId } >= 2
+
+                val isFull = when (selectedSport) {
+                    Sport.TENIS -> bookings.count {
+                        val bookingTime = Instant.ofEpochMilli(it.initDate)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalTime()
+
+                        bookingTime.hour == slot.hour &&
+                                bookingTime.minute == slot.minute &&
+                                it.court.startsWith("tenis")
+                    } >= numberTennis
+
+                    Sport.PADEL -> bookings.count {
+                        val bookingTime = Instant.ofEpochMilli(it.initDate)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalTime()
+
+                        bookingTime.hour == slot.hour &&
+                                bookingTime.minute == slot.minute &&
+                                it.court.startsWith("padel")
+                    } >= numberPadel
+
+                    else -> false
+                }
+
+                result[slot] = !(userLimitReached || isFull)
+            }
+
+            slotAvailability.value = result
+        }
     }
 
     fun isUserInMatch(match: Match, userId: String) = userId in match.players

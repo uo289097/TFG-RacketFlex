@@ -106,18 +106,21 @@ class MatchesRepositoryImpl(
         userId: String,
         match: Match
     ) {
-        /*val data = hashMapOf(
-            "booker_id" to booking.bookerId,
-            "court" to booking.court,
-            "init_date" to Timestamp(booking.initDate / 1000, 0),
-            "end_date" to Timestamp(booking.endDate / 1000, 0),
-            "type" to booking.type.name.lowercase()
+        val data = hashMapOf(
+            "booking_id" to match.bookingId,
+            "created_by" to match.createdBy,
+            "init_date" to Timestamp(match.initDate / 1000, 0),
+            "max_players" to match.maxPlayers,
+            "sport" to match.sport.toString().lowercase(),
+            "players" to match.players,
+            "score" to match.score
         )
+
         db.collection("clubs")
             .document(clubId)
-            .collection("bookings")
+            .collection("matches")
             .add(data)
-            .await()*/
+            .await()
     }
 
 }

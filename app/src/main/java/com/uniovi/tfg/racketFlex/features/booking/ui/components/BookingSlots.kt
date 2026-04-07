@@ -18,6 +18,7 @@ import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.booking.presentation.BookingViewModel
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -41,7 +42,7 @@ fun BookingSlots(
         filteredCourts.forEach { court ->
 
             // Cabecera de cada pista
-            item(key = "header_${court.id}") {      //TODO Key necesario?
+            item() {
                 Text(
                     text = "Pista: ${court.id}",
                     style = MaterialTheme.typography.titleMedium
@@ -51,49 +52,48 @@ fun BookingSlots(
             // Slots horarios de esa pista
             items(
                 items = slots,
-                key = { slot -> "slot_${court.id}_$slot" }
             ) { slot ->
+                if (!(slot.isBefore(LocalTime.now()) && viewModel.selectedDay == LocalDate.now())) {
+                    val initTime = viewModel.selectedDay.atTime(slot)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
 
-                val initTime = viewModel.selectedDay.atTime(slot)
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                    val endTime = initTime + slotDuration.toMillis()
 
-                val endTime = initTime + slotDuration.toMillis()
+                    val reserved = viewModel.isReserved(court, initTime, endTime)
 
-                val reserved = viewModel.isReserved(court, initTime, endTime)
+                    Button(
+                        onClick = {
+                            if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
+                                onShowLimitDialog()
+                            } else {
+                                onPendingBooking(Triple(court, initTime, endTime))
+                            }
+                        },
+                        enabled = !reserved,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
 
-                Button(
-                    onClick = {
-                        if (viewModel.hasReachedDailyLimit(user.email, user.role)) {
-                            onShowLimitDialog()
-                        } else {
-                            onPendingBooking(Triple(court, initTime, endTime))
-                        }
-                    },
-                    enabled = !reserved,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-
-                        ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                ) {
-                    val endLocalTime = slot.plus(slotDuration)
-                    Text(
-                        "${slot.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
-                            endLocalTime.format(
-                                DateTimeFormatter.ofPattern("HH:mm")
-                            )
-                        }"
-                    )
+                            ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                    ) {
+                        val endLocalTime = slot.plus(slotDuration)
+                        Text(
+                            "${slot.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
+                                endLocalTime.format(
+                                    DateTimeFormatter.ofPattern("HH:mm")
+                                )
+                            }"
+                        )
+                    }
                 }
             }
 
-            // Spacer entre pistas
-            item(key = "spacer_${court.id}") {
+            item {
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
