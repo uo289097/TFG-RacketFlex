@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.matches.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
@@ -53,10 +51,12 @@ fun MatchCard(
     val bottomPlayers = match.players.drop(half)
     var showScoreDialog by remember { mutableStateOf(false) }
 
-    Log.d("player_names", match.playersNames.toString())
-
     Card(
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
@@ -70,7 +70,8 @@ fun MatchCard(
             ) {
                 Text(
                     text = "Creador: ${match.createdBy}",
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -147,33 +148,38 @@ fun PlayerButton(
     alreadyJoined: Boolean,
     onJoin: () -> Unit
 ) {
-    when {
-        player == user.email ->
-            Button(
-                enabled = false,
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Green)
-            ) {
-                Text("Apuntado")
+    Button(
+        enabled = player.isBlank() && !alreadyJoined,
+        onClick = onJoin,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = when {
+                player.isBlank() -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.secondaryContainer
+            },
+            contentColor = when {
+                player.isBlank() -> MaterialTheme.colorScheme.onPrimary
+                else -> MaterialTheme.colorScheme.onSecondaryContainer
+            },
+            disabledContainerColor = when {
+                player == user.email -> MaterialTheme.colorScheme.secondaryContainer
+                alreadyJoined && player.isBlank() -> MaterialTheme.colorScheme.tertiaryContainer
+                else -> MaterialTheme.colorScheme.secondaryContainer            //TODO Cambiar
+            },
+            disabledContentColor = when {
+                player == user.email -> MaterialTheme.colorScheme.onSecondaryContainer
+                alreadyJoined && player.isBlank() -> MaterialTheme.colorScheme.onTertiaryContainer
+                else -> MaterialTheme.colorScheme.onSecondaryContainer          //TODO Cambiar
             }
-
-        alreadyJoined && player.isBlank() ->
-            Button(enabled = false, onClick = {}) {
-                Text("Disponible")
-            }
-
-        player.isBlank() ->
-            Button(onClick = onJoin) {
-                Text("Apuntarme")
-            }
-
-        else ->
-            Button(
-                onClick = {},
-                enabled = false,
-                colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Yellow)
-            ) {
-                Text(playerName, style = MaterialTheme.typography.bodySmall)
-            }
+        )
+    ) {
+        Text(
+            text = when {
+                player == user.email -> "Apuntado"
+                alreadyJoined && player.isBlank() -> "Disponible"
+                player.isBlank() -> "Apuntarme"
+                else -> playerName
+            },
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

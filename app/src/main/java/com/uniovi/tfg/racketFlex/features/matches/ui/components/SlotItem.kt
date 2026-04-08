@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
-import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.ConfirmMatchDialog
 import java.time.Duration
 import java.time.LocalTime
 import java.time.ZoneId
@@ -49,7 +48,7 @@ fun SlotItem(
     ) {
         Text(
             text = "$slot - $end",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 
