@@ -10,7 +10,8 @@ data class Match(
     val maxPlayers: Int,
     val players: List<String>,
     val sport: Sport,
-    val score: List<SetScore>
+    val score: List<SetScore>,
+    var playersNames: List<String>
 )
 
 

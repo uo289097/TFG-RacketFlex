@@ -15,4 +15,6 @@ interface MatchesRepository {
         userId: String,
         match: Match
     )
+
+    suspend fun getPlayerNames(playersNames: List<String>): List<String>
 }

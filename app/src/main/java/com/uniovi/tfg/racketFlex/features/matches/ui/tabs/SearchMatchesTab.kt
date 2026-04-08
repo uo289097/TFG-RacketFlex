@@ -22,7 +22,7 @@ fun SearchMatchesTab(
     clubId: String,
     user: User,
     viewModel: MatchesViewModel
-) {     // TODO Necesario clubId??
+) {
     LaunchedEffect(viewModel.selectedSport) {
         viewModel.loadMatches()
     }
@@ -36,7 +36,7 @@ fun SearchMatchesTab(
         Spacer(Modifier.height(8.dp))
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(viewModel.matches, key = { it.id }) { match ->
+            items(viewModel.matches) { match ->
                 MatchCard(
                     match = match,
                     user = user,

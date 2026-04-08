@@ -77,7 +77,12 @@ class MatchesViewModel(
     fun loadMatches() {
         val sport = selectedSport ?: return
         viewModelScope.launch {
-            matches = matchesRepository.getMatches(clubId, sport)
+            val result = matchesRepository.getMatches(clubId, sport)
+            matches = result.map { match ->
+                match.copy(
+                    playersNames = matchesRepository.getPlayerNames(match.players)
+                )
+            }
         }
     }
 
@@ -91,7 +96,13 @@ class MatchesViewModel(
     fun loadUserMatches(userId: String) {
         val sport = selectedSport ?: return
         viewModelScope.launch {
-            userMatches = matchesRepository.getUserMatches(clubId, sport, userId)
+            val result = matchesRepository.getUserMatches(clubId, sport, userId)
+            userMatches = result.map { match ->
+                match.copy(
+                    playersNames = matchesRepository.getPlayerNames(match.players)
+                )
+
+            }
         }
     }
 
@@ -126,7 +137,8 @@ class MatchesViewModel(
                 maxPlayers = maxPlayers,
                 players = List(maxPlayers) { if (it == 0) user.email else "" },
                 sport = sport,
-                score = emptyList()
+                score = emptyList(),
+                playersNames = emptyList()
             )
 
             matchesRepository.createMatch(

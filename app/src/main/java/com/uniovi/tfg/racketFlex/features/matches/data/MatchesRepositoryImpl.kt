@@ -7,6 +7,9 @@ import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.TennisMatchType
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 
 class MatchesRepositoryImpl(
@@ -36,7 +39,8 @@ class MatchesRepositoryImpl(
                         player1 = it["player1"]?.toInt() ?: 0,
                         player2 = it["player2"]?.toInt() ?: 0
                     )
-                } ?: emptyList()
+                } ?: emptyList(),
+                playersNames = emptyList()
             )
 
         }
@@ -86,7 +90,8 @@ class MatchesRepositoryImpl(
                         player1 = it["player1"]?.toInt() ?: 0,
                         player2 = it["player2"]?.toInt() ?: 0
                     )
-                } ?: emptyList()
+                } ?: emptyList(),
+                playersNames = emptyList()
             )
         }
     }
@@ -121,6 +126,23 @@ class MatchesRepositoryImpl(
             .collection("matches")
             .add(data)
             .await()
+    }
+
+    override suspend fun getPlayerNames(playersNames: List<String>): List<String> {
+        return coroutineScope {
+            playersNames.map { player ->
+                async {
+                    if (player.isEmpty()) ""
+                    else {
+                        val doc = db.collection("users")
+                            .document(player)
+                            .get()
+                            .await()
+                        doc.getString("nombre") ?: ""
+                    }
+                }
+            }.awaitAll()
+        }
     }
 
 }

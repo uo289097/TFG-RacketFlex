@@ -38,7 +38,6 @@ fun RegisterClubStep2Screen(
     ) {
         RegisterStepIndicator(currentStep = 2)
 
-        //TODO AÑADIR NOMBRE
         OutlinedTextField(
             value = viewModel.adminName,
             onValueChange = { viewModel.adminName = it },

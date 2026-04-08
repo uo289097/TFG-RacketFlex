@@ -37,7 +37,6 @@ fun HomeScreen(
     loginViewModel: LoginViewModel = viewModel(),
 ) {
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
-    //TODO Sustituir por primarytabRow y SecondaryTabRow??
     Scaffold(
         topBar = {
             TopAppBar(
