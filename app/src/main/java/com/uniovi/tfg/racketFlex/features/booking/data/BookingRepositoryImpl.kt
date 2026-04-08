@@ -2,7 +2,9 @@ package com.uniovi.tfg.racketFlex.features.booking.data
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.Booking
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
@@ -77,5 +79,67 @@ class BookingRepositoryImpl(
             .collection("bookings")
             .add(data)
             .await()
+    }
+
+    override suspend fun createMatchBooking(clubId: String, booking: Booking): String {
+        val data = hashMapOf(
+            "booker_id" to booking.bookerId,
+            "court" to booking.court,
+            "init_date" to Timestamp(booking.initDate / 1000, 0),
+            "end_date" to Timestamp(booking.endDate / 1000, 0),
+            "type" to booking.type.name.lowercase()
+        )
+        val reserva = db.collection("clubs")
+            .document(clubId)
+            .collection("bookings")
+            .add(data)
+            .await()
+        return reserva.id
+    }
+
+    override suspend fun getBookingInfo(clubId: String): BookingInfo {
+        val snapshot = db.collection("clubs")
+            .document(clubId)
+            .get()
+            .await()
+        return BookingInfo(
+            snapshot.getField<Int>("booking_duration") ?: 0,
+            snapshot.getField<Int>("open_time") ?: 0,
+            snapshot.getField<Int>("close_time") ?: 0,
+            snapshot.getField<Int>("number_tennis") ?: 0,
+            snapshot.getField<Int>("number_padel") ?: 0
+        )
+    }
+
+    override suspend fun getFirstAvailableCourt(
+        clubId: String,
+        sport: Sport,
+        initDate: Long,
+        endDate: Long
+    ): String? {
+        val prefix = if (sport == Sport.TENIS) "tenis" else "padel"
+        val field = if (sport == Sport.TENIS) "number_tennis" else "number_padel"
+
+        val clubDoc = db.collection("clubs").document(clubId).get().await()
+        val numCourts = clubDoc.getLong(field)?.toInt() ?: return null
+
+        val startTimestamp = Timestamp(initDate / 1000, 0)
+        val endTimestamp = Timestamp(endDate / 1000, 0)
+        val snapshot = db.collection("clubs")
+            .document(clubId)
+            .collection("bookings")
+            .whereGreaterThanOrEqualTo("init_date", startTimestamp)
+            .whereLessThan("init_date", endTimestamp)
+            .get()
+            .await()
+
+        val reservedCourts = snapshot.documents.mapNotNull { it.getString("court") }.toSet()
+
+        for (i in 1..numCourts) {
+            val courtId = "$prefix${i.toString().padStart(2, '0')}"
+            if (courtId !in reservedCourts) return courtId
+        }
+
+        return null // todas ocupadas
     }
 }

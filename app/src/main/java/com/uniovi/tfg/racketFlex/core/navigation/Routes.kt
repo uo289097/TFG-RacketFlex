@@ -23,7 +23,10 @@ sealed class Routes : NavKey {
     ) : Routes()
 
     @Serializable
-    data object PartidosRoute : Routes()
+    data class MatchesRoute(
+        val clubId: String,
+        val user: User
+    ) : Routes()
 
     @Serializable
     data object ErrorRoute : Routes()

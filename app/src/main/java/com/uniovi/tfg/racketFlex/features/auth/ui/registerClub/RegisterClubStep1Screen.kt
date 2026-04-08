@@ -44,7 +44,7 @@ fun RegisterClubStep1Screen(
             && viewModel.closingHour.isNotBlank()
             && viewModel.slotDuration.isNotBlank()
     var expanded by remember { mutableStateOf(false) }
-    
+
 
     Column(
         modifier = Modifier
@@ -107,16 +107,16 @@ fun RegisterClubStep1Screen(
         OutlinedTextField(
             value = viewModel.openingHour,
             onValueChange = { viewModel.openingHour = it },
-            label = { Text("Hora apertura") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text("Hora apertura (HH:mm)") },
+            placeholder = { Text("Ej: 10:00") },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = viewModel.closingHour,
             onValueChange = { viewModel.closingHour = it },
-            label = { Text("Hora cierre") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text("Hora cierre (HH:mm)") },
+            placeholder = { Text("Ej: 10:00") },
             modifier = Modifier.fillMaxWidth()
         )
 

@@ -23,20 +23,20 @@ import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
-import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
+import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModel
+import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)         //TODO Preguntar si es válido
 @Composable
 fun HomeScreen(
     user: User,
-    modules: List<ClubModule>,          //TODO ?? PASAR CLUB EN LUGAR DE LISTA MÓDULOS
+    modules: List<ClubModule>,
     onLogout: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
     loginViewModel: LoginViewModel = viewModel(),
 ) {
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,7 +75,7 @@ fun HomeScreen(
         ) {
             when (selectedModule) {
                 ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
-                ClubModule.MATCHES -> MatchesScreen()
+                ClubModule.MATCHES -> MatchesScreen(clubId = user.club, user = user)
                 ClubModule.COURSES -> Text("Módulo no implementado")
                 ClubModule.COMPETITIONS -> Text("Módulo no implementado")
                 ClubModule.RANKING -> Text("Módulo no implementado")

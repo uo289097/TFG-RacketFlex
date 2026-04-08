@@ -16,7 +16,9 @@ class RegisterClubRepositoryImpl(
         modules: List<String>,
         slotDuration: Int,
         numberTennis: Int,
-        numberPadel: Int
+        numberPadel: Int,
+        openTime: Int,
+        closeTime: Int
     ) {
         db.collection("clubs").document(clubName).set(
             hashMapOf(
@@ -24,17 +26,20 @@ class RegisterClubRepositoryImpl(
                 "modulos" to modules,
                 "booking_duration" to slotDuration,
                 "number_tennis" to numberTennis,
-                "number_padel" to numberPadel
+                "number_padel" to numberPadel,
+                "open_time" to openTime,
+                "close_time" to closeTime
             )
         ).await()
     }
 
-    override suspend fun createUser(email: String, club: String) {
+    override suspend fun createUser(email: String, club: String, name: String) {
         db.collection("users").document(email).set(
             hashMapOf(
                 "email" to email,
                 "club" to club,
-                "rol" to "admin"
+                "rol" to "admin",
+                "name" to name
             )
         ).await()
     }

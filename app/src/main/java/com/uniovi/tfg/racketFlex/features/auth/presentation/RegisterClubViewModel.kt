@@ -30,6 +30,7 @@ class RegisterClubViewModel(
     var slotDuration by mutableStateOf("")
 
     // Step 2
+    var adminName by mutableStateOf("")
     var adminEmail by mutableStateOf("")
     var adminPassword by mutableStateOf("")
 
@@ -39,6 +40,13 @@ class RegisterClubViewModel(
 
     fun register() {
         viewModelScope.launch {
+            val openMinutes = parseHourToMinutes(openingHour)
+            val closeMinutes = parseHourToMinutes(closingHour)
+
+            if (openMinutes == null || closeMinutes == null) {
+                _uiState.value = RegisterState.Error("Formato de hora inválido (HH:mm)")
+                return@launch
+            }
             _uiState.value = RegisterState.Loading
             try {
                 if (registerRepository.clubExists(clubName)) {
@@ -53,16 +61,34 @@ class RegisterClubViewModel(
                     modules = selectedModules.map { it.name.lowercase() },
                     slotDuration = slotDuration.toIntOrNull() ?: 0,
                     numberTennis = tennisCourts.toIntOrNull() ?: 0,
-                    numberPadel = padelCourts.toIntOrNull() ?: 0
+                    numberPadel = padelCourts.toIntOrNull() ?: 0,
+                    openTime = openMinutes,
+                    closeTime = closeMinutes
                 )
 
-                registerRepository.createUser(adminEmail, clubName)
+                registerRepository.createUser(adminEmail, clubName, adminName)
 
                 _uiState.value = RegisterState.Success
 
             } catch (e: Exception) {
                 _uiState.value = RegisterState.Error(e.message ?: "Error desconocido")
             }
+        }
+    }
+
+    fun parseHourToMinutes(time: String): Int? {
+        return try {
+            val parts = time.split(":")
+            if (parts.size != 2) return null
+
+            val hour = parts[0].toInt()
+            val minute = parts[1].toInt()
+
+            if (hour !in 0..23 || minute !in 0..59) return null
+
+            hour * 60 + minute
+        } catch (_: Exception) {
+            null
         }
     }
 }

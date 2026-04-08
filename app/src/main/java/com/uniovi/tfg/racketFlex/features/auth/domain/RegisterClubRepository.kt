@@ -8,9 +8,11 @@ interface RegisterClubRepository {
         modules: List<String>,
         slotDuration: Int,
         numberTennis: Int,
-        numberPadel: Int
+        numberPadel: Int,
+        openTime: Int,
+        closeTime: Int
     )
 
-    suspend fun createUser(email: String, club: String)
+    suspend fun createUser(email: String, club: String, name: String)
 
 }

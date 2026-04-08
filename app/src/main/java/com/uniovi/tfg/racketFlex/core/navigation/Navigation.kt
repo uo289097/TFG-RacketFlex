@@ -8,7 +8,7 @@ import androidx.navigation3.ui.NavDisplay
 
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.LoginRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.HomeRoute
-import com.uniovi.tfg.racketFlex.core.navigation.Routes.PartidosRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.MatchesRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.BookingsRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep1Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep2Route
@@ -21,7 +21,7 @@ import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep2
 import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep3Screen
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.home.HomeScreen
-import com.uniovi.tfg.racketFlex.features.matches.MatchesScreen
+import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 @Composable
 fun Navigation() {
@@ -56,8 +56,8 @@ fun Navigation() {
                 BookingScreen(clubId = route.clubId, user = route.user)
             }
 
-            entry<PartidosRoute> {
-                MatchesScreen()
+            entry<MatchesRoute> { route ->
+                MatchesScreen(clubId = route.clubId, user = route.user)
             }
 
 

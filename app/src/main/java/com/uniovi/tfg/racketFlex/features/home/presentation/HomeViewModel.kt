@@ -1,4 +1,4 @@
-package com.uniovi.tfg.racketFlex.features.home
+package com.uniovi.tfg.racketFlex.features.home.presentation
 
 import androidx.lifecycle.ViewModel
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
