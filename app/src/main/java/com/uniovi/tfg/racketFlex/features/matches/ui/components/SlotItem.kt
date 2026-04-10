@@ -42,13 +42,15 @@ fun SlotItem(
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.outlineVariant
         ),
         enabled = enabled
     ) {
         Text(
-            text = "$slot - $end",
-            style = MaterialTheme.typography.bodyMedium
+            text = "$slot - $end"
         )
     }
 

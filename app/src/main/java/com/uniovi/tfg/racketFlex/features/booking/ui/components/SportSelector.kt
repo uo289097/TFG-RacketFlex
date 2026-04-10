@@ -32,6 +32,7 @@ fun SportSelector(viewModel: BookingViewModel) {
                         if (viewModel.selectedSport == sport)
                             MaterialTheme.colorScheme.onPrimary
                         else MaterialTheme.colorScheme.onSecondary
+
                 )
             ) {
                 Text(sport.name)

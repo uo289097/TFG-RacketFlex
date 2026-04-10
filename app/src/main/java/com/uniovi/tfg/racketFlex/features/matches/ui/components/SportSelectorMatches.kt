@@ -32,8 +32,7 @@ fun SportSelectorMatches(viewModel: MatchesViewModel) {
                 )
             ) {
                 Text(
-                    sport.name,
-                    style = MaterialTheme.typography.bodyMedium
+                    sport.name
                 )
             }
         }

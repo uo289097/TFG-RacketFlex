@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +82,8 @@ fun LoginScreen(
                 singleLine = true,
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -103,7 +105,11 @@ fun LoginScreen(
             // Botón login
             Button(
                 onClick = { viewModel.login(email, password) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
             ) {
                 Text(text = "Iniciar Sesión")
             }
@@ -132,13 +138,21 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Olvidaste contraseña
-            TextButton(onClick = { viewModel.showResetDialog = true }) {
-                Text(text = "¿Olvidaste tu contraseña?", color = MaterialTheme.colorScheme.primary)
+            TextButton(
+                onClick = { viewModel.showResetDialog = true },
+            ) {
+                Text(
+                    text = "¿Olvidaste tu contraseña?",
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = { onNavigateToRegister() }) {
+            TextButton(
+                onClick = { onNavigateToRegister() },
+
+                ) {
                 Text(
                     text = "¿Quieres registrar tu club?",
                     color = MaterialTheme.colorScheme.primary
@@ -193,7 +207,13 @@ private fun ForgotPasswordDialog(
             } else {
                 Button(
                     onClick = { onSend(email) },
-                    enabled = email.isNotBlank()
+                    enabled = email.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                        disabledContainerColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 ) { Text("Enviar") }
             }
         },

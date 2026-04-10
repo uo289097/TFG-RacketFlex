@@ -30,7 +30,7 @@ fun Navigation() {
 
     NavDisplay(
         backStack = backStack,
-        onBack = {},
+        onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<LoginRoute> {
                 LoginScreen(
