@@ -20,19 +20,20 @@ fun SportSelectorMatches(viewModel: MatchesViewModel) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Sport.entries.forEach { sport ->
+            val isSelected = viewModel.selectedSport == sport
             Button(
                 onClick = { viewModel.selectSport(sport) },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (viewModel.selectedSport == sport)
-                        MaterialTheme.colorScheme.primary
+                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.secondary,
-                    contentColor = if (viewModel.selectedSport == sport)
-                        MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onSecondary
+                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onSecondary,
                 )
             ) {
-                Text(sport.name)
+                Text(
+                    sport.name
+                )
             }
         }
     }

@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
-import com.uniovi.tfg.racketFlex.features.matches.ui.tabs.ConfirmMatchDialog
 import java.time.Duration
 import java.time.LocalTime
 import java.time.ZoneId
@@ -43,13 +42,15 @@ fun SlotItem(
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.outlineVariant
         ),
         enabled = enabled
     ) {
         Text(
-            text = "$slot - $end",
-            style = MaterialTheme.typography.bodyLarge
+            text = "$slot - $end"
         )
     }
 

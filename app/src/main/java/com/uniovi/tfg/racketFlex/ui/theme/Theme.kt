@@ -10,54 +10,92 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
-//TODO Quitar comentarios
+//TODO
 private val DarkColorScheme = darkColorScheme(
-    primary = YellowPrimary,        // Amarillo principal
-    onPrimary = Color.Black,        // Texto sobre amarillo
+    primary = PrimaryDark,
+    onPrimary = OnPrimaryDark,
+    primaryContainer = PrimaryContainerDark,
+    onPrimaryContainer = OnPrimaryContainerDark,
 
-    secondary = BlueSecondary,      // Azul secundario
-    onSecondary = Color.White,
+    secondary = SecondaryDark,
+    onSecondary = OnSecondaryDark,
+    secondaryContainer = SecondaryContainerDark,
+    onSecondaryContainer = OnSecondaryContainerDark,
 
-    tertiary = MyBookingPurple,     // Morado (por ejemplo para FAB, cosas destacadas)
-    onTertiary = Color.White,
+    tertiary = TertiaryDark,
+    onTertiary = OnTertiaryDark,
+    tertiaryContainer = TertiaryContainerDark,
+    onTertiaryContainer = OnTertiaryContainerDark,
 
-    background = BackgroundLight,   // Fondo app
-    onBackground = Color(0xFF212121),
+    surfaceDim = SurfaceDimDark,
+    surface = SurfaceDark,
+    surfaceBright = SurfaceBrightDark,
+    surfaceContainerLowest = SurfaceContainerLowestDark,
+    surfaceContainerLow = SurfaceContainerLowDark,
+    surfaceContainer = SurfaceContainerDark,
+    surfaceContainerHigh = SurfaceContainerHighDark,
+    surfaceContainerHighest = SurfaceContainerHighestDark,
+    onSurface = OnSurfaceDark,
+    onSurfaceVariant = onSurfaceVariantDark,
+    outline = OutlineDark,
+    outlineVariant = OutlineVariantDark,
 
-    surface = SurfaceLight,         // Tarjetas, panels
-    onSurface = Color(0xFF212121)
+    error = ErrorDark,
+    onError = OnErrorDark,
+    errorContainer = ErrorContainerDark,
+    onErrorContainer = OnErrorContainerDark,
 
-)
+    inverseSurface = InverseSurfaceDark,
+    inverseOnSurface = InverseOnSurfaceDark,
+    inversePrimary = InversePrimaryDark,
+
+    scrim = ScrimDark,
+
+
+    )
 
 private val LightColorScheme = lightColorScheme(
-    primary = YellowPrimary,        // Amarillo principal
-    onPrimary = Color.Black,        // Texto sobre amarillo
+    primary = PrimaryLight,
+    onPrimary = OnPrimaryLight,
+    primaryContainer = PrimaryContainerLight,
+    onPrimaryContainer = OnPrimaryContainerLight,
 
-    secondary = BlueSecondary,      // Azul secundario
-    onSecondary = Color.White,
+    secondary = SecondaryLight,
+    onSecondary = OnSecondaryLight,
+    secondaryContainer = SecondaryContainerLight,
+    onSecondaryContainer = OnSecondaryContainerLight,
 
-    tertiary = MyBookingPurple,     // Morado (por ejemplo para FAB, cosas destacadas)
-    onTertiary = Color.White,
+    tertiary = TertiaryLight,
+    onTertiary = OnTertiaryLight,
+    tertiaryContainer = TertiaryContainerLight,
+    onTertiaryContainer = OnTertiaryContainerLight,
 
-    background = BackgroundLight,   // Fondo app
-    onBackground = Color(0xFF212121),
+    surfaceDim = SurfaceDimLight,
+    surface = SurfaceLight,
+    surfaceBright = SurfaceBrightLight,
+    surfaceContainerLowest = SurfaceContainerLowestLight,
+    surfaceContainerLow = SurfaceContainerLowLight,
+    surfaceContainer = SurfaceContainerLight,
+    surfaceContainerHigh = SurfaceContainerHighLight,
+    surfaceContainerHighest = SurfaceContainerHighestLight,
+    onSurface = OnSurfaceLight,
+    onSurfaceVariant = onSurfaceVariantLight,
+    outline = OutlineLight,
+    outlineVariant = OutlineVariantLight,
 
-    surface = SurfaceLight,         // Tarjetas, panels
-    onSurface = Color(0xFF212121)
+    error = ErrorLight,
+    onError = OnErrorLight,
+    errorContainer = ErrorContainerLight,
+    onErrorContainer = OnErrorContainerLight,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    inverseSurface = InverseSurfaceLight,
+    inverseOnSurface = InverseOnSurfaceLight,
+    inversePrimary = InversePrimaryLight,
+
+    scrim = ScrimLight,
 )
 
 private val Shapes = Shapes(
@@ -70,7 +108,7 @@ private val Shapes = Shapes(
 fun TFGRacketFlexTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,          //TODO true??
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
