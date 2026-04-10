@@ -1,0 +1,66 @@
+package com.uniovi.tfg.racketFlex.core.network
+
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
+import com.uniovi.tfg.racketFlex.core.model.ClubModule
+import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
+import kotlinx.coroutines.tasks.await
+
+class FirestoreService {
+    private val db = FirebaseFirestore.getInstance()
+
+    suspend fun getUser(email: String): User? {
+        return try {
+            val doc = db.collection("users").document(email).get().await()
+
+            if (doc.exists()) {
+                Log.d("AppRole", doc.getString("rol").toString())
+                User(
+                    email = doc.getString("email") ?: "",
+                    club = doc.getString("club") ?: "",
+                    name = doc.getString("nombre") ?: "",
+                    if (doc.getString("rol") == null ||
+                        doc.getString("rol") == "socio"
+                    ) UserRole.SOCIO else UserRole.ADMIN
+                )
+
+            } else null
+
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getClubModules(clubId: String, user: User): List<String> {
+        if (user.role == UserRole.ADMIN) {
+            return listOf(
+                "reservas",
+                "admin"
+            )
+        }
+        return try {
+            val doc = db.collection("clubs").document(clubId).get().await()
+            val modules = doc.get("modulos") as? List<*>
+
+            modules?.mapNotNull { it as? String } ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+}
+
+// TODO SACAR A MAPPER
+fun String.toClubModule(): ClubModule? {
+    return when (this.lowercase()) {
+        "reservas" -> ClubModule.RESERVAS
+        "partidos" -> ClubModule.MATCHES
+        "courses" -> ClubModule.COURSES
+        "competitions" -> ClubModule.COMPETITIONS
+        "ranking" -> ClubModule.RANKING
+        "admin" -> ClubModule.ADMIN
+        else -> null
+    }
+}
+
