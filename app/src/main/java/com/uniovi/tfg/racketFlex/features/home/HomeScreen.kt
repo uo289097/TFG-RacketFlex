@@ -23,6 +23,7 @@ import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
+import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
 import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModel
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
@@ -76,7 +77,7 @@ fun HomeScreen(
             when (selectedModule) {
                 ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
                 ClubModule.MATCHES -> MatchesScreen(clubId = user.club, user = user)
-                ClubModule.COURSES -> Text("Módulo no implementado")
+                ClubModule.COURSES -> CoursesScreen(clubId = user.club, user = user)
                 ClubModule.COMPETITIONS -> Text("Módulo no implementado")
                 ClubModule.RANKING -> Text("Módulo no implementado")
                 ClubModule.ADMIN -> Text("Módulo no implementado")
