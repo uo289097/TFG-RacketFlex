@@ -32,13 +32,14 @@ class CoursesRepositoryImpl(
         return snapshot.documents.map { doc ->
             Course(
                 id = doc.id,
+                title = doc.getString("title") ?: "",
+                description = doc.getString("description") ?: "",
                 maxPlayers = doc.getField<Int>("max_players") ?: 0,
                 players = doc.get("players") as? List<String> ?: emptyList(),
                 sport = sport,
                 price = doc.getDouble("price") ?: 0.0,
                 initDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
-                endDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
-                description = doc.getString("description") ?: "",
+                endDate = doc.getTimestamp("end_date")?.toDate()?.time ?: 0L,
                 daysOfWeek = (doc.get("daysOfWeek") as? List<String>)
                     ?.mapNotNull { day ->
                         try {
@@ -47,9 +48,9 @@ class CoursesRepositoryImpl(
                             null
                         }
                     } ?: emptyList(),
-                startTime = doc.getString("startTime")
+                startTime = doc.getString("start_time")
                     ?.let { LocalTime.parse(it, formatter) },
-                endTime = doc.getString("endTime")
+                endTime = doc.getString("end_time")
                     ?.let { LocalTime.parse(it, formatter) },
             )
         }
@@ -98,13 +99,14 @@ class CoursesRepositoryImpl(
         return snapshot.documents.map { doc ->
             Course(
                 id = doc.id,
+                title = doc.getString("title") ?: "",
+                description = doc.getString("description") ?: "",
                 maxPlayers = doc.getField<Int>("max_players") ?: 0,
                 players = doc.get("players") as? List<String> ?: emptyList(),
                 sport = sport,
                 price = doc.getDouble("price") ?: 0.0,
                 initDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
-                endDate = doc.getTimestamp("init_date")?.toDate()?.time ?: 0L,
-                description = doc.getString("description") ?: "",
+                endDate = doc.getTimestamp("end_date")?.toDate()?.time ?: 0L,
                 daysOfWeek = (doc.get("daysOfWeek") as? List<String>)
                     ?.mapNotNull { day ->
                         try {
@@ -113,11 +115,19 @@ class CoursesRepositoryImpl(
                             null
                         }
                     } ?: emptyList(),
-                startTime = doc.getString("startTime")
+                startTime = doc.getString("start_time")
                     ?.let { LocalTime.parse(it, formatter) },
-                endTime = doc.getString("endTime")
+                endTime = doc.getString("end_time")
                     ?.let { LocalTime.parse(it, formatter) },
             )
         }
+    }
+
+    override suspend fun cancelCourseInscription(
+        clubId: String,
+        userId: String,
+        courseId: String
+    ) {
+        //TODO
     }
 }
