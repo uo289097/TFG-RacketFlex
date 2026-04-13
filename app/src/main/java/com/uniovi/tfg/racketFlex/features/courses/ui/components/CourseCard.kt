@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.courses.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,9 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,13 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.courses.domain.entities.Course
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -59,6 +55,12 @@ fun CourseCard(
     val daysText = course.daysOfWeek.joinToString(", ") {
         it.getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es-ES"))
     }
+
+    val isFinished = course.endDate < System.currentTimeMillis()
+    val hasNotStarted = course.initDate > System.currentTimeMillis()
+    val alreadyJoined = user.email in course.players
+    val isInProgress =
+        course.initDate <= System.currentTimeMillis() && course.endDate >= System.currentTimeMillis()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -107,26 +109,36 @@ fun CourseCard(
             }
 
             Spacer(Modifier.height(12.dp))
-            // TODO Cambiar
-            Button(
-                onClick = { Log.d("courses", "Curso: {${course.title}}") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Inscribirme")
+
+            if ((hasNotStarted && !alreadyJoined) || (isInProgress && !alreadyJoined)) {
+                Button(
+                    onClick = { onJoin() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Inscribirme")
+                }
+            } else if (hasNotStarted) {
+                Text(
+                    "Empezará proximamente",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            } else if (isFinished) {
+                Text(
+                    "Finalizado",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    "En curso",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
 }
-
-/*
-Text(course.title)
-Text(course.sport.name)
-Text(course.description)
-Text(course.daysOfWeek.toString())
-Text(course.maxPlayers.toString())
-Text("Inscritos: ${course.players.size}")
-Text("Precio: ${course.price} €/mes")
-Text(course.initDate.toString())
-Text(course.endDate.toString())
-Text(course.startTime.toString())
-Text(course.endTime.toString())*/

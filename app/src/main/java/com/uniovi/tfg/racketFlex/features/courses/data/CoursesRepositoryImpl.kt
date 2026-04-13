@@ -1,6 +1,8 @@
 package com.uniovi.tfg.racketFlex.features.courses.data
 
+import android.util.Log
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.Sport
@@ -69,7 +71,8 @@ class CoursesRepositoryImpl(
             .get()
             .await()
 
-        val players = (doc.get("players") as? List<String>)?.toMutableList() ?: return
+        val players = (doc.get("players") as? List<String>)?.toMutableList() ?: mutableListOf()
+        if (players.contains(userId)) return
         val maxPlayers = doc.getField<Int>("max_players") ?: return
         if (players.size >= maxPlayers) return
 
@@ -79,7 +82,7 @@ class CoursesRepositoryImpl(
             .document(clubId)
             .collection("courses")
             .document(courseId)
-            .update("players", players)
+            .update("players", FieldValue.arrayUnion(userId))
             .await()
     }
 

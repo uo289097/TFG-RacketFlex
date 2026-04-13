@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
+import com.uniovi.tfg.racketFlex.features.courses.ui.components.CourseCard
 import com.uniovi.tfg.racketFlex.features.courses.ui.components.SportSelectorCourses
 
 @Composable
@@ -37,12 +38,11 @@ fun MyCoursesTab(
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(viewModel.userCourses) { course ->
-                // TODO
-                /*CourseCard(
+                CourseCard(
                     course = course,
                     user = user,
                     onJoin = {}
-                )*/
+                )
             }
         }
     }
