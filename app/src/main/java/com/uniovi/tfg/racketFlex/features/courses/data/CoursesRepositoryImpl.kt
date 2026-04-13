@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.courses.data
 
-import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -114,7 +113,7 @@ class CoursesRepositoryImpl(
                     ?.mapNotNull { day ->
                         try {
                             DayOfWeek.valueOf(day)
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             null
                         }
                     } ?: emptyList(),
@@ -132,5 +131,23 @@ class CoursesRepositoryImpl(
         courseId: String
     ) {
         //TODO
+        val doc = db.collection("clubs")
+            .document(clubId)
+            .collection("courses")
+            .document(courseId)
+            .get()
+            .await()
+
+        val players = (doc.get("players") as? List<String>)?.toMutableList() ?: mutableListOf()
+        if (!players.contains(userId)) return
+
+        players.remove(userId)
+
+        db.collection("clubs")
+            .document(clubId)
+            .collection("courses")
+            .document(courseId)
+            .update("players", FieldValue.arrayRemove(userId))
+            .await()
     }
 }

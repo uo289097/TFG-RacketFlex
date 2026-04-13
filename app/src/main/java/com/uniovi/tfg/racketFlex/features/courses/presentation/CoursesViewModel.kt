@@ -36,6 +36,7 @@ class CoursesViewModel(
         viewModelScope.launch {
             coursesRepository.joinCourse(clubId, courseId, userId)
             loadCourses()
+            loadUserCourses(userId)
         }
     }
 
@@ -43,6 +44,14 @@ class CoursesViewModel(
         val sport = selectedSport ?: return
         viewModelScope.launch {
             userCourses = coursesRepository.getUserCourses(clubId, sport, userId)
+        }
+    }
+
+    fun cancelCourseInscription(courseId: String, userId: String) {
+        viewModelScope.launch {
+            coursesRepository.cancelCourseInscription(clubId, userId, courseId)
+            loadCourses()
+            loadUserCourses(userId)
         }
     }
 

@@ -41,7 +41,10 @@ fun MyCoursesTab(
                 CourseCard(
                     course = course,
                     user = user,
-                    onJoin = {}
+                    onJoin = {},
+                    onCancel = {
+                        viewModel.cancelCourseInscription(course.id, user.email)
+                    }
                 )
             }
         }

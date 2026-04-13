@@ -41,6 +41,9 @@ fun SearchCoursesTab(
                     course = course,
                     user = user,
                     onJoin = { viewModel.joinCourse(course.id, user.email) },
+                    onCancel = {
+                        viewModel.cancelCourseInscription(course.id, user.email)
+                    }
                 )
             }
         }

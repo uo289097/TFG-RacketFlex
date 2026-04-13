@@ -13,6 +13,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,7 +33,11 @@ fun CourseCard(
     course: Course,
     user: User,
     onJoin: () -> Unit,
+    onCancel: () -> Unit
 ) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showCancelDialog by remember { mutableStateOf(false) }
+
     val locale = Locale.getDefault()
     val start = Instant.ofEpochMilli(course.initDate)
         .atZone(ZoneId.systemDefault())
@@ -37,16 +45,18 @@ fun CourseCard(
     val end = Instant.ofEpochMilli(course.endDate)
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
-    val dateText = if (start.month == end.month) {
-        "${start.dayOfMonth}–${end.dayOfMonth} ${
-            start.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
-        }"
-    } else {
-        "${start.dayOfMonth} ${
-            start.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
-        } – ${end.dayOfMonth} ${
-            end.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
-        }"
+    val dateText = remember(course.initDate, course.endDate) {
+        if (start.month == end.month) {
+            "${start.dayOfMonth}–${end.dayOfMonth} ${
+                start.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
+            }"
+        } else {
+            "${start.dayOfMonth} ${
+                start.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
+            } – ${end.dayOfMonth} ${
+                end.month.getDisplayName(TextStyle.SHORT, locale).uppercase()
+            }"
+        }
     }
 
     val priceText = NumberFormat.getNumberInstance(Locale.forLanguageTag("es-ES"))
@@ -103,7 +113,7 @@ fun CourseCard(
                     Text("⏰ ${course.startTime} - ${course.endTime}")
                 }
                 Column {
-                    Text("👥 ${course.maxPlayers - course.players.size} plazas")
+                    Text("👥 ${maxOf(0, course.maxPlayers - course.players.size)} plazas")
                     Text("💰 $priceText €/mes")
                 }
             }
@@ -112,18 +122,11 @@ fun CourseCard(
 
             if ((hasNotStarted && !alreadyJoined) || (isInProgress && !alreadyJoined)) {
                 Button(
-                    onClick = { onJoin() },
+                    onClick = { showConfirmDialog = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Inscribirme")
                 }
-            } else if (hasNotStarted) {
-                Text(
-                    "Empezará proximamente",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
             } else if (isFinished) {
                 Text(
                     "Finalizado",
@@ -132,13 +135,39 @@ fun CourseCard(
                     textAlign = TextAlign.Center
                 )
             } else {
-                Text(
-                    "En curso",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                Button(
+                    onClick = { showCancelDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancelar inscripción")
+                }
             }
         }
+    }
+    if (showConfirmDialog) {
+        ConfirmInscriptionDialog(
+            course = course,
+            dateText = dateText,
+            onConfirm = {
+                onJoin()
+                showConfirmDialog = false
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            }
+        )
+    }
+    if (showCancelDialog) {
+        ConfirmCancelDialog(
+            course = course,
+            dateText = dateText,
+            onConfirm = {
+                onCancel()
+                showCancelDialog = false
+            },
+            onDismiss = {
+                showCancelDialog = false
+            }
+        )
     }
 }
