@@ -28,7 +28,7 @@ import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModel
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 
-@OptIn(ExperimentalMaterial3Api::class)         //TODO Preguntar si es válido
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     user: User,
@@ -80,7 +80,6 @@ fun HomeScreen(
                 ClubModule.COURSES -> CoursesScreen(clubId = user.club, user = user)
                 ClubModule.COMPETITIONS -> Text("Módulo no implementado")
                 ClubModule.RANKING -> Text("Módulo no implementado")
-                ClubModule.ADMIN -> Text("Módulo no implementado")
             }
         }
     }

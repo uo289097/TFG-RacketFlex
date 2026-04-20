@@ -6,5 +6,4 @@ enum class ClubModule {
     COURSES,
     COMPETITIONS,
     RANKING,
-    ADMIN
 }

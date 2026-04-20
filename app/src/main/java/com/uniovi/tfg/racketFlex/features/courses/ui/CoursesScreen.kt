@@ -13,8 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModelFactory
+import com.uniovi.tfg.racketFlex.features.courses.ui.tabs.CreateCourseTab
 import com.uniovi.tfg.racketFlex.features.courses.ui.tabs.MyCoursesTab
 import com.uniovi.tfg.racketFlex.features.courses.ui.tabs.SearchCoursesTab
 
@@ -28,7 +30,9 @@ fun CoursesScreen(
         factory = CoursesViewModelFactory(clubId)
     )
 
-    val tabs = listOf("Explorar cursos", "Mis cursos")
+    val adminTabs = listOf("Explorar cursos", "Mis cursos", "Crear curso")
+    val userTabs = listOf("Explorar cursos", "Mis cursos")
+    val tabs = if (user.role == UserRole.ADMIN) adminTabs else userTabs
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SecondaryTabRow(selectedTabIndex = tabIndex) {
@@ -43,6 +47,7 @@ fun CoursesScreen(
         when (tabIndex) {
             0 -> SearchCoursesTab(clubId, user, viewModel)
             1 -> MyCoursesTab(clubId, user, viewModel)
+            2 -> CreateCourseTab(clubId, user, viewModel)
         }
     }
 }

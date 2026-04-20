@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
 import com.uniovi.tfg.racketFlex.features.courses.ui.components.CourseCard
 import com.uniovi.tfg.racketFlex.features.courses.ui.components.SportSelectorCourses
@@ -25,8 +26,14 @@ fun MyCoursesTab(
 ) {
 
     LaunchedEffect(viewModel.selectedSport) {
-        viewModel.loadUserCourses(user.email)
+        if (user.role == UserRole.ADMIN)
+            viewModel.loadAdminCourses()
+        else
+            viewModel.loadUserCourses(user.email)
     }
+
+    val items = if (user.role == UserRole.ADMIN) viewModel.adminCourses else viewModel.userCourses
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,13 +44,16 @@ fun MyCoursesTab(
         Spacer(Modifier.height(8.dp))
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(viewModel.userCourses) { course ->
+            items(items) { course ->
                 CourseCard(
                     course = course,
                     user = user,
                     onJoin = {},
                     onCancel = {
                         viewModel.cancelCourseInscription(course.id, user.email)
+                    },
+                    onRemove = {
+                        viewModel.removeCourse(course.id)
                     }
                 )
             }

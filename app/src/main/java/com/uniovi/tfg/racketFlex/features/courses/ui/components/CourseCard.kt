@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.courses.domain.entities.Course
 import java.text.NumberFormat
 import java.time.Instant
@@ -33,7 +34,8 @@ fun CourseCard(
     course: Course,
     user: User,
     onJoin: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onRemove: () -> Unit
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showCancelDialog by remember { mutableStateOf(false) }
@@ -119,27 +121,35 @@ fun CourseCard(
             }
 
             Spacer(Modifier.height(12.dp))
-
-            if ((hasNotStarted && !alreadyJoined) || (isInProgress && !alreadyJoined)) {
+            if (user.role == UserRole.ADMIN) {
                 Button(
-                    onClick = { showConfirmDialog = true },
+                    onClick = { onRemove() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Inscribirme")
+                    Text("Eliminar curso")
                 }
-            } else if (isFinished) {
-                Text(
-                    "Finalizado",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
             } else {
-                Button(
-                    onClick = { showCancelDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Cancelar inscripción")
+                if ((hasNotStarted && !alreadyJoined) || (isInProgress && !alreadyJoined)) {
+                    Button(
+                        onClick = { showConfirmDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Inscribirme")
+                    }
+                } else if (isFinished) {
+                    Text(
+                        "Finalizado",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    Button(
+                        onClick = { showCancelDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Cancelar inscripción")
+                    }
                 }
             }
         }
