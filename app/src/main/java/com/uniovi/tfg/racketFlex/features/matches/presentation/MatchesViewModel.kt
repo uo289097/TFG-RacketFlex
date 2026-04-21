@@ -1,7 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.matches.presentation
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -172,7 +171,7 @@ class MatchesViewModel(
                     .toInstant()
                     .toEpochMilli()
 
-                val endDate = initDate + bookingInfo.booking_duration
+                val endDate = initDate + bookingInfo.bookingDuration
 
                 val userLimitReached =
                     bookings.count { it.bookerId == userId } >= 2
@@ -192,7 +191,7 @@ class MatchesViewModel(
                         bookingTime.hour == slot.hour &&
                                 bookingTime.minute == slot.minute &&
                                 it.court.startsWith("tenis")
-                    } >= bookingInfo.number_tennis
+                    } >= bookingInfo.numberTennis
 
                     Sport.PADEL -> bookings.count {
                         val bookingTime = Instant.ofEpochMilli(it.initDate)
@@ -202,7 +201,7 @@ class MatchesViewModel(
                         bookingTime.hour == slot.hour &&
                                 bookingTime.minute == slot.minute &&
                                 it.court.startsWith("padel")
-                    } >= bookingInfo.number_padel
+                    } >= bookingInfo.numberPadel
 
                     else -> false
                 }

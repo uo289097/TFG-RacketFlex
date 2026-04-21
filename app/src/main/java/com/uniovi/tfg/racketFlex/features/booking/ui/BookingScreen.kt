@@ -37,25 +37,25 @@ fun BookingScreen(
     )
     val bookingInfo = viewModel.bookingInfo ?: return
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
-    val slotDuration = remember(bookingInfo.booking_duration) {
-        Duration.ofMinutes(bookingInfo.booking_duration.toLong())
+    val slotDuration = remember(bookingInfo.bookingDuration) {
+        Duration.ofMinutes(bookingInfo.bookingDuration.toLong())
     }
-    val startHour = remember(bookingInfo.open_time) {
+    val startHour = remember(bookingInfo.openTime) {
         LocalTime.of(
-            bookingInfo.open_time / 60,
-            bookingInfo.open_time % 60
+            bookingInfo.openTime / 60,
+            bookingInfo.openTime % 60
         )
     }
 
-    val endHour = remember(bookingInfo.close_time) {
+    val endHour = remember(bookingInfo.closeTime) {
         LocalTime.of(
-            bookingInfo.close_time / 60,
-            bookingInfo.close_time % 60
+            bookingInfo.closeTime / 60,
+            bookingInfo.closeTime % 60
         )
 
     }
     val slots = remember(slotDuration, startHour, endHour) {
-        if (bookingInfo.booking_duration == 0) return@remember mutableListOf()
+        if (bookingInfo.bookingDuration == 0) return@remember mutableListOf()
         val result = mutableListOf<LocalTime>()
         var current = startHour
         while (current.plus(slotDuration) <= endHour) {

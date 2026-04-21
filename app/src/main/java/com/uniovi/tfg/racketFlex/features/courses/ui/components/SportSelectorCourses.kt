@@ -18,8 +18,8 @@ fun SportSelectorCourses(viewModel: CoursesViewModel) {
     val bookingInfo = viewModel.bookingInfo ?: return
 
     val availableSports = buildList {
-        if (bookingInfo.number_tennis > 0) add(Sport.TENIS to "Tenis")
-        if (bookingInfo.number_padel > 0) add(Sport.PADEL to "Padel")
+        if (bookingInfo.numberTennis > 0) add(Sport.TENIS to "Tenis")
+        if (bookingInfo.numberPadel > 0) add(Sport.PADEL to "Padel")
     }
 
     Row(
