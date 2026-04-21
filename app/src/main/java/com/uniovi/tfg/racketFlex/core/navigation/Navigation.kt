@@ -11,6 +11,9 @@ import com.uniovi.tfg.racketFlex.core.navigation.Routes.HomeRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.MatchesRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.BookingsRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.CoursesRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.ConfigRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.ProfileRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.UsersRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep1Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep2Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep3Route
@@ -22,7 +25,7 @@ import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep2
 import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep3Screen
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
-import com.uniovi.tfg.racketFlex.features.home.HomeScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.HomeScreen
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 @Composable
@@ -50,6 +53,15 @@ fun Navigation() {
                     user = route.user,
                     onLogout = {
                         backStack.removeIf { it !is LoginRoute }
+                    },
+                    onNavigateToUsers = {
+                        backStack.add(UsersRoute(route.user.club, route.user))
+                    },
+                    onNavigateToConfig = {
+                        backStack.add(ConfigRoute(route.user.club, route.user))
+                    },
+                    onNavigateToProfile = {
+                        backStack.add(ProfileRoute(route.user))
                     }
                 )
             }
@@ -66,7 +78,7 @@ fun Navigation() {
                 CoursesScreen(clubId = route.clubId, user = route.user)
             }
 
-
+            // TODO AÑADIR RUTAS MENU LATERAL
 
             entry<RegisterClubStep1Route> {
                 RegisterClubStep1Screen(

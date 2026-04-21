@@ -39,7 +39,7 @@ class LoginViewModel(
             if (success) {
                 val user = firestore.getUser(username)
                 val modulesRaw =
-                    firestore.getClubModules(user!!.club, user)      // TODO GESTIONAR NULL
+                    firestore.getClubModules(user!!.club)      // TODO GESTIONAR NULL
                 val modules = modulesRaw.mapNotNull { it.toClubModule() }
                 _uiState.value = LoginState.Success(
                     user = user,

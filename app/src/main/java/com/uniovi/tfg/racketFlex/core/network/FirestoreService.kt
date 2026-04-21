@@ -27,18 +27,18 @@ class FirestoreService {
 
             } else null
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
 
-    suspend fun getClubModules(clubId: String, user: User): List<String> {
+    suspend fun getClubModules(clubId: String): List<String> {
         return try {
             val doc = db.collection("clubs").document(clubId).get().await()
             val modules = doc.get("modulos") as? List<*>
 
             modules?.mapNotNull { it as? String } ?: emptyList()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
