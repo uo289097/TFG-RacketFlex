@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
 import com.uniovi.tfg.racketFlex.features.courses.ui.components.CourseCard
 import com.uniovi.tfg.racketFlex.features.courses.ui.components.SportSelectorCourses
@@ -24,7 +25,10 @@ fun SearchCoursesTab(
     viewModel: CoursesViewModel
 ) {
     LaunchedEffect(viewModel.selectedSport) {
-        viewModel.loadCourses()
+        if (user.role == UserRole.ADMIN)
+            viewModel.loadAdminCourses()
+        else
+            viewModel.loadCourses()
     }
     Column(
         modifier = Modifier

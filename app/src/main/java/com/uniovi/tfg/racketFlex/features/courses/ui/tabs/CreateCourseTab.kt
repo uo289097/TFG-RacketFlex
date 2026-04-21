@@ -1,26 +1,14 @@
 package com.uniovi.tfg.racketFlex.features.courses.ui.tabs
 
-import android.app.TimePickerDialog
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,26 +18,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
+import com.uniovi.tfg.racketFlex.features.courses.ui.components.DaysSelector
+import com.uniovi.tfg.racketFlex.features.courses.ui.components.SportDropdown
+import com.uniovi.tfg.racketFlex.features.courses.ui.components.TimeSelector
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
-    var datePickerKey by remember { mutableStateOf(0) }
+    var datePickerKey by remember { mutableIntStateOf(0) }
     val datePickerState = key(datePickerKey) { rememberDateRangePickerState() }
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -75,7 +62,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
     ) {
 
         item {
-            // 📝 Título
             OutlinedTextField(
                 value = viewModel.title,
                 onValueChange = { viewModel.title = it },
@@ -85,7 +71,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         }
 
         item {
-            // 📝 Descripción
             OutlinedTextField(
                 value = viewModel.description,
                 onValueChange = { viewModel.description = it },
@@ -95,7 +80,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         }
 
         item {
-            // 🎾 Selector deporte
             SportDropdown(
                 selected = viewModel.sport,
                 onSelected = { viewModel.sport = it }
@@ -103,7 +87,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         }
 
         item {
-            // 👥 Max players
             OutlinedTextField(
                 value = viewModel.maxPlayers,
                 onValueChange = { viewModel.maxPlayers = it },
@@ -128,7 +111,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         }
 
         item {
-            // 📅 Días de la semana
             DaysSelector(
                 selectedDays = viewModel.selectedDays,
                 onToggle = viewModel::toggleDay
@@ -182,7 +164,6 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         }
 
         item {
-            // ✅ Crear
             Button(
                 onClick = { viewModel.createCourse() },
                 modifier = Modifier.fillMaxWidth()
@@ -211,99 +192,5 @@ fun CreateCourseTab(clubId: String, user: User, viewModel: CoursesViewModel) {
         ) {
             DateRangePicker(state = datePickerState)
         }
-    }
-}
-
-@Composable
-fun SportDropdown(
-    selected: Sport?,
-    onSelected: (Sport) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box {
-        OutlinedTextField(
-            value = selected?.name ?: "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Deporte") },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, null)
-            }
-        )
-
-        // Box transparente encima que captura el click
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clickable { expanded = true }
-        )
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            Sport.entries.forEach {
-                DropdownMenuItem(
-                    text = { Text(it.name) },
-                    onClick = {
-                        onSelected(it)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DaysSelector(
-    selectedDays: Set<DayOfWeek>,
-    onToggle: (DayOfWeek) -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.horizontalScroll(rememberScrollState())
-    ) {
-        DayOfWeek.entries.forEach { day ->
-            FilterChip(
-                selected = selectedDays.contains(day),
-                onClick = { onToggle(day) },
-                label = {
-                    Text(
-                        day
-                            .getDisplayName(
-                                TextStyle.SHORT,
-                                Locale.forLanguageTag("es")
-                            ).uppercase()
-                    )
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun TimeSelector(
-    label: String,
-    time: LocalTime?,
-    onTimeSelected: (LocalTime) -> Unit
-) {
-    val context = LocalContext.current
-
-    Button(onClick = {
-        val now = LocalTime.now()
-        TimePickerDialog(
-            context,
-            { _, hour, minute ->
-                onTimeSelected(LocalTime.of(hour, minute))
-            },
-            now.hour,
-            now.minute,
-            true
-        ).show()
-    }) {
-        Text("$label: ${time ?: "--:--"}")
     }
 }

@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.getField
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.courses.domain.CoursesRepository
 import com.uniovi.tfg.racketFlex.features.courses.domain.entities.Course
@@ -219,6 +220,21 @@ class CoursesRepositoryImpl(
             .await()
 
     }
+
+    override suspend fun getBookingInfo(clubId: String): BookingInfo {
+        val snapshot = db.collection("clubs")
+            .document(clubId)
+            .get()
+            .await()
+        return BookingInfo(
+            snapshot.getField<Int>("booking_duration") ?: 0,
+            snapshot.getField<Int>("open_time") ?: 0,
+            snapshot.getField<Int>("close_time") ?: 0,
+            snapshot.getField<Int>("number_tennis") ?: 0,
+            snapshot.getField<Int>("number_padel") ?: 0
+        )
+    }
+
 
     // TODO SACAR A MAPPER
     fun String.toSport(): Sport? {

@@ -15,11 +15,18 @@ import com.uniovi.tfg.racketFlex.features.courses.presentation.CoursesViewModel
 
 @Composable
 fun SportSelectorCourses(viewModel: CoursesViewModel) {
+    val bookingInfo = viewModel.bookingInfo ?: return
+
+    val availableSports = buildList {
+        if (bookingInfo.number_tennis > 0) add(Sport.TENIS to "Tenis")
+        if (bookingInfo.number_padel > 0) add(Sport.PADEL to "Padel")
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Sport.entries.forEach { sport ->
+        availableSports.forEach { (sport, label) ->
             val isSelected = viewModel.selectedSport == sport
             Button(
                 onClick = { viewModel.selectSport(sport) },
@@ -31,9 +38,7 @@ fun SportSelectorCourses(viewModel: CoursesViewModel) {
                     else MaterialTheme.colorScheme.onSecondary,
                 )
             ) {
-                Text(
-                    sport.name
-                )
+                Text(label.uppercase())
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.courses.data.CoursesRepositoryImpl
 import com.uniovi.tfg.racketFlex.features.courses.domain.CoursesRepository
@@ -39,6 +40,19 @@ class CoursesViewModel(
     var endTime by mutableStateOf<LocalTime?>(null)
 
     var errorMessage by mutableStateOf<String?>(null)
+
+    var bookingInfo by mutableStateOf<BookingInfo?>(null)
+
+
+    init {
+        getBookingInfo()
+    }
+
+    fun getBookingInfo() {
+        viewModelScope.launch {
+            bookingInfo = coursesRepository.getBookingInfo(clubId)
+        }
+    }
 
     fun selectSport(sport: Sport) {
         selectedSport = sport
@@ -97,8 +111,6 @@ class CoursesViewModel(
     }
 
     fun createCourse() {
-        // TODO VALIDAR
-        //if (title.isBlank() || sport == null || startDate == null || startTime == null) return
         createCourseValidation()
         if (errorMessage != null) return
 

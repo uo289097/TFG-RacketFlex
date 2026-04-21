@@ -122,6 +122,11 @@ fun CourseCard(
 
             Spacer(Modifier.height(12.dp))
             if (user.role == UserRole.ADMIN) {
+                if (course.players.isEmpty())
+                    Text("Sin inscritos")
+                else
+                    Text("Inscritos: ${course.players}")
+                Spacer(Modifier.height(5.dp))
                 Button(
                     onClick = { onRemove() },
                     modifier = Modifier.fillMaxWidth()
