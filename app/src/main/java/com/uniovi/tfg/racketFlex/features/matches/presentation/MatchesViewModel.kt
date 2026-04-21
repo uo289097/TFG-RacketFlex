@@ -1,7 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.matches.presentation
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.Booking
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.core.model.User
@@ -37,12 +37,10 @@ class MatchesViewModel(
     var selectedTennisMatchType by mutableStateOf<TennisMatchType?>(null)
     var matches by mutableStateOf<List<Match>>(emptyList())
     var userMatches by mutableStateOf<List<Match>>(emptyList())
-    var bookingDuration by mutableIntStateOf(0)
-    var openTime by mutableIntStateOf(0)
-    var closeTime by mutableIntStateOf(0)
-    var numberTennis by mutableIntStateOf(0)
-    var numberPadel by mutableIntStateOf(0)
     val slotAvailability = MutableStateFlow<Map<LocalTime, Boolean>>(emptyMap())
+
+    var bookingInfo by mutableStateOf<BookingInfo?>(null)
+
 
     init {
         getBookingInfo()
@@ -50,13 +48,7 @@ class MatchesViewModel(
 
     fun getBookingInfo() {
         viewModelScope.launch {
-            val bookingInfo = bookingRepository.getBookingInfo(clubId)
-            bookingDuration = bookingInfo.booking_duration
-            openTime = bookingInfo.open_time
-            closeTime = bookingInfo.close_time
-            numberTennis = bookingInfo.number_tennis
-            numberPadel = bookingInfo.number_padel
-
+            bookingInfo = bookingRepository.getBookingInfo(clubId)
         }
     }
 
@@ -162,20 +154,24 @@ class MatchesViewModel(
     }
 
     fun checkAvailability(userId: String, userRole: UserRole, slots: List<LocalTime>) {
+        val bookingInfo = bookingInfo ?: return
+        val sport = selectedSport ?: return
+        val selectedDay = selectedDay ?: return
+
         viewModelScope.launch {
             val result = mutableMapOf<LocalTime, Boolean>()
 
-            val day = selectedDay!!.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val bookings = bookingRepository.getBookings(day, selectedSport!!, clubId)
+            val day = selectedDay.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val bookings = bookingRepository.getBookings(day, sport, clubId)
 
             for (slot in slots) {
                 val zone = ZoneId.systemDefault()
-                val initDate = selectedDay!!.atTime(slot)
+                val initDate = selectedDay.atTime(slot)
                     .atZone(zone)
                     .toInstant()
                     .toEpochMilli()
 
-                val endDate = initDate + bookingDuration
+                val endDate = initDate + bookingInfo.bookingDuration
 
                 val userLimitReached =
                     bookings.count { it.bookerId == userId } >= 2
@@ -195,7 +191,7 @@ class MatchesViewModel(
                         bookingTime.hour == slot.hour &&
                                 bookingTime.minute == slot.minute &&
                                 it.court.startsWith("tenis")
-                    } >= numberTennis
+                    } >= bookingInfo.numberTennis
 
                     Sport.PADEL -> bookings.count {
                         val bookingTime = Instant.ofEpochMilli(it.initDate)
@@ -205,7 +201,7 @@ class MatchesViewModel(
                         bookingTime.hour == slot.hour &&
                                 bookingTime.minute == slot.minute &&
                                 it.court.startsWith("padel")
-                    } >= numberPadel
+                    } >= bookingInfo.numberPadel
 
                     else -> false
                 }

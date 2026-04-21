@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.booking.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,26 +35,27 @@ fun BookingScreen(
         key = user.email,
         factory = BookingViewModelFactory(clubId)
     )
+    val bookingInfo = viewModel.bookingInfo ?: return
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
-    val slotDuration = remember(viewModel.bookingDuration) {
-        Duration.ofMinutes(viewModel.bookingDuration.toLong())
+    val slotDuration = remember(bookingInfo.bookingDuration) {
+        Duration.ofMinutes(bookingInfo.bookingDuration.toLong())
     }
-    val startHour = remember(viewModel.openTime) {
+    val startHour = remember(bookingInfo.openTime) {
         LocalTime.of(
-            viewModel.openTime / 60,
-            viewModel.openTime % 60
+            bookingInfo.openTime / 60,
+            bookingInfo.openTime % 60
         )
     }
 
-    val endHour = remember(viewModel.closeTime) {
+    val endHour = remember(bookingInfo.closeTime) {
         LocalTime.of(
-            viewModel.closeTime / 60,
-            viewModel.closeTime % 60
+            bookingInfo.closeTime / 60,
+            bookingInfo.closeTime % 60
         )
 
     }
     val slots = remember(slotDuration, startHour, endHour) {
-        if (viewModel.bookingDuration == 0) return@remember mutableListOf()
+        if (bookingInfo.bookingDuration == 0) return@remember mutableListOf()
         val result = mutableListOf<LocalTime>()
         var current = startHour
         while (current.plus(slotDuration) <= endHour) {

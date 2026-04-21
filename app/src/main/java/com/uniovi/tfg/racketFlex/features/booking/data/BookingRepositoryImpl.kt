@@ -107,7 +107,8 @@ class BookingRepositoryImpl(
             snapshot.getField<Int>("open_time") ?: 0,
             snapshot.getField<Int>("close_time") ?: 0,
             snapshot.getField<Int>("number_tennis") ?: 0,
-            snapshot.getField<Int>("number_padel") ?: 0
+            snapshot.getField<Int>("number_padel") ?: 0,
+            snapshot.getField<Int>("max_bookings_per_day") ?: 0
         )
     }
 

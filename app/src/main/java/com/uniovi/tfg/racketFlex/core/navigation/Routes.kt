@@ -29,6 +29,12 @@ sealed class Routes : NavKey {
     ) : Routes()
 
     @Serializable
+    data class CoursesRoute(
+        val clubId: String,
+        val user: User
+    ) : Routes()
+
+    @Serializable
     data object ErrorRoute : Routes()
 
 

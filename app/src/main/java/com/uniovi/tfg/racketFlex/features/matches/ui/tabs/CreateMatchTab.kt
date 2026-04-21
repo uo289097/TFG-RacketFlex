@@ -1,17 +1,10 @@
 package com.uniovi.tfg.racketFlex.features.matches.ui.tabs
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,21 +12,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.uniovi.tfg.racketFlex.core.model.Court
 import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.core.model.User
-import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.presentation.MatchesViewModel
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.MatchDaySelector
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.SlotItem
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.SportSelectorMatches
 import com.uniovi.tfg.racketFlex.features.matches.ui.components.TennisMatchTypeSelector
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun CreateMatchTab(
@@ -41,26 +29,28 @@ fun CreateMatchTab(
     user: User,
     viewModel: MatchesViewModel
 ) {
+    val bookingInfo = viewModel.bookingInfo ?: return
+
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
-    val slotDuration = remember(viewModel.bookingDuration) {
-        Duration.ofMinutes(viewModel.bookingDuration.toLong())
+    val slotDuration = remember(bookingInfo.bookingDuration) {
+        Duration.ofMinutes(bookingInfo.bookingDuration.toLong())
     }
-    val startHour = remember(viewModel.openTime) {
+    val startHour = remember(bookingInfo.openTime) {
         LocalTime.of(
-            viewModel.openTime / 60,
-            viewModel.openTime % 60
+            bookingInfo.openTime / 60,
+            bookingInfo.openTime % 60
         )
     }
 
-    val endHour = remember(viewModel.closeTime) {
+    val endHour = remember(bookingInfo.closeTime) {
         LocalTime.of(
-            viewModel.closeTime / 60,
-            viewModel.closeTime % 60
+            bookingInfo.closeTime / 60,
+            bookingInfo.closeTime % 60
         )
 
     }
     val slots = remember(slotDuration, startHour, endHour) {
-        if (viewModel.bookingDuration == 0) return@remember mutableListOf()
+        if (bookingInfo.bookingDuration == 0) return@remember mutableListOf()
         val result = mutableListOf<LocalTime>()
         var current = startHour
         while (current.plus(slotDuration) <= endHour) {

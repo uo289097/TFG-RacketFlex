@@ -33,12 +33,6 @@ class FirestoreService {
     }
 
     suspend fun getClubModules(clubId: String, user: User): List<String> {
-        if (user.role == UserRole.ADMIN) {
-            return listOf(
-                "reservas",
-                "admin"
-            )
-        }
         return try {
             val doc = db.collection("clubs").document(clubId).get().await()
             val modules = doc.get("modulos") as? List<*>
@@ -59,7 +53,6 @@ fun String.toClubModule(): ClubModule? {
         "courses" -> ClubModule.COURSES
         "competitions" -> ClubModule.COMPETITIONS
         "ranking" -> ClubModule.RANKING
-        "admin" -> ClubModule.ADMIN
         else -> null
     }
 }

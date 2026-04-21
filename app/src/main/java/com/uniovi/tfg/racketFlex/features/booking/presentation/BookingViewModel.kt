@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uniovi.tfg.racketFlex.core.model.BookingInfo
 import com.uniovi.tfg.racketFlex.core.model.BookingType
 import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.booking.data.BookingRepositoryImpl
@@ -28,9 +28,8 @@ class BookingViewModel(
     var selectedCourt by mutableStateOf<Court?>(null)
     var courts by mutableStateOf<List<Court>>(emptyList())
     var bookings by mutableStateOf<List<Booking>>(emptyList())
-    var bookingDuration by mutableIntStateOf(0)
-    var openTime by mutableIntStateOf(0)
-    var closeTime by mutableIntStateOf(0)
+    var bookingInfo by mutableStateOf<BookingInfo?>(null)
+
 
     init {
         getBookingInfo()
@@ -38,10 +37,7 @@ class BookingViewModel(
 
     fun getBookingInfo() {
         viewModelScope.launch {
-            val bookingInfo = repository.getBookingInfo(clubId)
-            bookingDuration = bookingInfo.booking_duration
-            openTime = bookingInfo.open_time
-            closeTime = bookingInfo.close_time
+            bookingInfo = repository.getBookingInfo(clubId)
         }
     }
 
@@ -104,9 +100,10 @@ class BookingViewModel(
 
     }
 
-    fun hasReachedDailyLimit(userId: String, userRole: UserRole, limit: Int = 2): Boolean {
+    fun hasReachedDailyLimit(userId: String, userRole: UserRole): Boolean {
+        val bookingInfo = bookingInfo ?: return true
         if (userRole == UserRole.ADMIN) return false
-        return bookings.count { it.bookerId == userId } >= limit
+        return bookings.count { it.bookerId == userId } >= bookingInfo.maxBookingsPerDay
     }
 
 }

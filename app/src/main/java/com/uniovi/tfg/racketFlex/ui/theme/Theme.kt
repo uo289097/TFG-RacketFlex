@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
-//TODO
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
     onPrimary = OnPrimaryDark,
@@ -53,9 +52,7 @@ private val DarkColorScheme = darkColorScheme(
     inversePrimary = InversePrimaryDark,
 
     scrim = ScrimDark,
-
-
-    )
+)
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryLight,
