@@ -26,6 +26,7 @@ import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep3
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.HomeScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ConfigScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ProfileScreen
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
@@ -59,7 +60,7 @@ fun Navigation() {
                         backStack.add(UsersRoute(route.user.club, route.user))
                     },
                     onNavigateToConfig = {
-                        backStack.add(ConfigRoute(route.user.club, route.user))
+                        backStack.add(ConfigRoute(route.user.club))
                     },
                     onNavigateToProfile = {
                         backStack.add(ProfileRoute(route.user))
@@ -83,6 +84,13 @@ fun Navigation() {
             entry<ProfileRoute> { route ->
                 ProfileScreen(
                     user = route.user,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
+            entry<ConfigRoute> { route ->
+                ConfigScreen(
+                    clubId = route.clubId,
                     onBack = { backStack.removeLastOrNull() }
                 )
             }

@@ -22,8 +22,8 @@ sealed class Routes : NavKey {
 
     data class ConfigRoute(
         val clubId: String,
-        val user: User
     ) : Routes()
+
 
     data class UsersRoute(
         val clubId: String,

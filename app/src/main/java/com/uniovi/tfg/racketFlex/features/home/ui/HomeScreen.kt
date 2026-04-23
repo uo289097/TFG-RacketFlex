@@ -87,7 +87,7 @@ fun HomeScreen(
                         onNavigateToConfig = {
                             scope.launch { drawerState.close() }
                             Log.d("HomeScreen", "onNavigateToConfig")
-                            //onNavigateToConfig()
+                            onNavigateToConfig()
                         }
                     )
                 }
