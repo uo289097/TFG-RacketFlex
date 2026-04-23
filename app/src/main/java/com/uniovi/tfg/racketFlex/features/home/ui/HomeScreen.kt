@@ -95,8 +95,7 @@ fun HomeScreen(
                 AccountDrawerSection(
                     onNavigateToProfile = {
                         scope.launch { drawerState.close() }
-                        Log.d("HomeScreen", "onNavigateToProfile")
-                        //onNavigateToProfile()
+                        onNavigateToProfile()
                     }
                 )
 
