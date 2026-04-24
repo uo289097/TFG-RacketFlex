@@ -28,7 +28,7 @@ import com.uniovi.tfg.racketFlex.R
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    navigateToHome: (User, List<ClubModule>) -> Unit,
+    navigateToHome: (User) -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
 
@@ -128,7 +128,7 @@ fun LoginScreen(
                 is LoginState.Success -> {
                     val data = uiState as LoginState.Success
                     LaunchedEffect(uiState) {
-                        navigateToHome(data.user, data.modules)
+                        navigateToHome(data.user)
                     }
                 }
 

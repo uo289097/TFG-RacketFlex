@@ -8,7 +8,6 @@ sealed class LoginState {
     object Loading : LoginState()
     data class Success(
         val user: User,
-        val modules: List<ClubModule>
     ) : LoginState()
 
     data class Error(val message: String) : LoginState()

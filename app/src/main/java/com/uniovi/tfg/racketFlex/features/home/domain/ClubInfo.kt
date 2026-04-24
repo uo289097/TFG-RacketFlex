@@ -13,3 +13,15 @@ data class ClubInfo(
     val openTime: Int,
     val closeTime: Int
 )
+
+data class ClubInfoBack(
+    val nombre: String,
+    val booking_duration: Int,
+    val booking_price: Double,
+    val max_bookings_per_day: Int,
+    val modulos: List<String>,
+    val number_padel: Int,
+    val number_tennis: Int,
+    val open_time: Int,
+    val close_time: Int
+)

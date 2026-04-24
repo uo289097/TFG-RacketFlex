@@ -13,7 +13,6 @@ sealed class Routes : NavKey {
     @Serializable
     data class HomeRoute(
         val user: User,
-        val modules: List<ClubModule>
     ) : Routes()
 
     data class ProfileRoute(

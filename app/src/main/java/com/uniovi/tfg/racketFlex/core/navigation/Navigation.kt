@@ -41,8 +41,8 @@ fun Navigation() {
         entryProvider = entryProvider {
             entry<LoginRoute> {
                 LoginScreen(
-                    navigateToHome = { user, modules ->
-                        backStack.add(HomeRoute(user, modules))
+                    navigateToHome = { user ->
+                        backStack.add(HomeRoute(user))
                     },
                     onNavigateToRegister = {
                         backStack.add(RegisterClubStep1Route)
@@ -51,7 +51,6 @@ fun Navigation() {
             }
             entry<HomeRoute> { route ->
                 HomeScreen(
-                    modules = route.modules,
                     user = route.user,
                     onLogout = {
                         backStack.removeIf { it !is LoginRoute }

@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,10 @@ import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
+import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModel
+import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModelFactory
 import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModel
+import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModelFactory
 import com.uniovi.tfg.racketFlex.features.home.ui.components.AboutDialog
 import com.uniovi.tfg.racketFlex.features.home.ui.components.AccountDrawerSection
 import com.uniovi.tfg.racketFlex.features.home.ui.components.AdminDrawerSection
@@ -52,14 +56,23 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     user: User,
-    modules: List<ClubModule>,
     onLogout: () -> Unit,
     onNavigateToUsers: () -> Unit,
     onNavigateToConfig: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    viewModel: HomeViewModel = viewModel(),
     loginViewModel: LoginViewModel = viewModel(),
 ) {
+
+    val viewModel: HomeViewModel = viewModel(
+        key = user.club,
+        factory = HomeViewModelFactory(user.club)
+    )
+
+    LaunchedEffect(user.club) {
+        viewModel.loadModules()
+    }
+    if (viewModel.modules.isEmpty()) return
+
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -135,7 +148,7 @@ fun HomeScreen(
             },
             bottomBar = {
                 NavigationBar {
-                    modules.forEach { module ->
+                    viewModel.modules.forEach { module ->
                         NavigationBarItem(
                             icon = { /* TODO ICON */ },
                             label = { Text(module.name) },

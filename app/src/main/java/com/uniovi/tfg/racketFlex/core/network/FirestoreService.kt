@@ -34,11 +34,16 @@ class FirestoreService {
 
     suspend fun getClubModules(clubId: String): List<String> {
         return try {
-            val doc = db.collection("clubs").document(clubId).get().await()
+            val doc = db.collection("clubs")
+                .document(clubId)
+                .get()
+                .await()
             val modules = doc.get("modulos") as? List<*>
+            Log.d("modules", "FS ${modules.toString()}")
 
             modules?.mapNotNull { it as? String } ?: emptyList()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("modules", e.toString())
             emptyList()
         }
     }
@@ -49,7 +54,7 @@ class FirestoreService {
 fun String.toClubModule(): ClubModule? {
     return when (this.lowercase()) {
         "reservas" -> ClubModule.RESERVAS
-        "partidos" -> ClubModule.MATCHES
+        "matches" -> ClubModule.MATCHES
         "courses" -> ClubModule.COURSES
         "competitions" -> ClubModule.COMPETITIONS
         "ranking" -> ClubModule.RANKING

@@ -1,5 +1,7 @@
 package com.uniovi.tfg.racketFlex.features.home.ui.subscreens
 
+import android.widget.Toast
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -22,9 +25,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModel
 import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModelFactory
+import com.uniovi.tfg.racketFlex.features.home.ui.components.ModuleSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +55,18 @@ fun ConfigScreen(clubId: String, onBack: () -> Unit) {
     )
     val clubInfo = viewModel.clubInfo ?: return
     val context = LocalContext.current
+
+    var showTimePickerOpen by remember { mutableStateOf(false) }
+    var showTimePickerClose by remember { mutableStateOf(false) }
+
+    val timePickerStateOpen = rememberTimePickerState(
+        initialHour = viewModel.openTime / 60,
+        initialMinute = viewModel.openTime % 60
+    )
+    val timePickerStateClose = rememberTimePickerState(
+        initialHour = viewModel.closeTime / 60,
+        initialMinute = viewModel.closeTime % 60
+    )
 
     LaunchedEffect(clubId) {
         viewModel.loadClub()
@@ -102,15 +126,12 @@ fun ConfigScreen(clubId: String, onBack: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
             Spacer(Modifier.height(5.dp))
-            // TODO Módulos, sacar de días crear curso
-            /*OutlinedTextField(
-                value = viewModel.actualPassword,
-                onValueChange = { viewModel.actualPassword = it },
-                label = { Text("Contraseña actual") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            )*/
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            ) {
+                ModuleSelector(viewModel)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
@@ -179,21 +200,39 @@ fun ConfigScreen(clubId: String, onBack: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
-            OutlinedTextField(
-                value = viewModel.openTime,
-                onValueChange = { viewModel.openTime = it },
-                label = { Text("Hora de apertura") },       // TODO FORMATEAR HORA
+
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = viewModel.formatTime(viewModel.openTime),
+                    onValueChange = {},
+                    label = { Text("Hora de apertura") },
+                    readOnly = true,
+                )
+                IconButton(onClick = { showTimePickerOpen = true }) {
+                    Icon(Icons.Default.AccessTime, contentDescription = null)
+                }
+            }
+
+
             Spacer(Modifier.height(5.dp))
-            OutlinedTextField(
-                value = viewModel.closeTime,
-                onValueChange = { viewModel.closeTime = it },
-                label = { Text("Hora de cierre") },          // TODO FORMATEAR HORA
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            )
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = viewModel.formatTime(viewModel.closeTime),
+                    onValueChange = {},
+                    label = { Text("Hora de cierre") },
+                    readOnly = true,
+                )
+                IconButton(onClick = { showTimePickerClose = true }) {
+                    Icon(Icons.Default.AccessTime, contentDescription = null)
+                }
+
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider()
@@ -217,22 +256,68 @@ fun ConfigScreen(clubId: String, onBack: () -> Unit) {
                 Button(onClick = { onBack() }) {
                     Text("Cancelar")
                 }
-                Button(onClick = {
-                    /*viewModel.saveChanges(
-                        onSuccess = {
-                            Toast.makeText(
-                                context,
-                                "Cambios guardados correctamente",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            onBack()
-                        }
-                    )*/
-                }) {
+                Button(
+                    onClick = {
+                        viewModel.saveChanges(
+                            onSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Cambios guardados correctamente",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                onBack()
+                            }
+                        )
+                    },
+                    enabled = viewModel.errorMessage == null
+                ) {
                     Text("Guardar cambios")
                 }
             }
-
+        }
+    }
+    if (showTimePickerOpen) {
+        TimePickerDialog(
+            onDismissRequest = { showTimePickerOpen = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.openTime = timePickerStateOpen.hour * 60 + timePickerStateOpen.minute
+                    showTimePickerOpen = false
+                }) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePickerOpen = false }) {
+                    Text("Cancelar")
+                }
+            },
+            title = { Text("Hora de apertura") }
+        ) {
+            TimePicker(state = timePickerStateOpen)
+        }
+    }
+    if (showTimePickerClose) {
+        TimePickerDialog(
+            onDismissRequest = { showTimePickerClose = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.closeTime =
+                        timePickerStateClose.hour * 60 + timePickerStateClose.minute
+                    showTimePickerClose = false
+                }) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePickerClose = false }) {
+                    Text("Cancelar")
+                }
+            },
+            title = { Text("Hora de cierre") }
+        ) {
+            TimePicker(state = timePickerStateClose)
         }
     }
 }
+
