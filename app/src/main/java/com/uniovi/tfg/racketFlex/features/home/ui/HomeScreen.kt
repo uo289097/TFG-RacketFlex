@@ -9,7 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.SportsScore
+import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -70,8 +76,11 @@ fun HomeScreen(
 
     LaunchedEffect(user.club) {
         viewModel.loadModules()
+        viewModel.loadName()
     }
+
     if (viewModel.modules.isEmpty()) return
+    if (viewModel.clubName.isEmpty()) return
 
     var selectedModule by remember { mutableStateOf(ClubModule.RESERVAS) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -86,7 +95,7 @@ fun HomeScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = user.club,
+                    text = viewModel.clubName,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -95,7 +104,7 @@ fun HomeScreen(
                     AdminDrawerSection(
                         onNavigateToUsers = {
                             scope.launch { drawerState.close() }
-                            //onNavigateToUsers()
+                            onNavigateToUsers()
                         },
                         onNavigateToConfig = {
                             scope.launch { drawerState.close() }
@@ -126,7 +135,7 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(user.club) },
+                    title = { Text(viewModel.clubName) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menú")
@@ -150,7 +159,18 @@ fun HomeScreen(
                 NavigationBar {
                     viewModel.modules.forEach { module ->
                         NavigationBarItem(
-                            icon = { /* TODO ICON */ },
+                            icon = {
+                                Icon(
+                                    imageVector = when (module) {
+                                        ClubModule.RESERVAS -> Icons.Default.CalendarMonth
+                                        ClubModule.MATCHES -> Icons.Default.SportsTennis
+                                        ClubModule.COURSES -> Icons.Default.SportsScore
+                                        ClubModule.COMPETITIONS -> Icons.Default.EmojiEvents
+                                        ClubModule.RANKING -> Icons.Default.Leaderboard
+                                    },
+                                    contentDescription = module.name
+                                )
+                            },
                             label = { Text(module.name) },
                             selected = selectedModule == module,
                             onClick = { selectedModule = module }

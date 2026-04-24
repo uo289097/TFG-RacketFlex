@@ -28,6 +28,7 @@ import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.HomeScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ConfigScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ProfileScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.UsersScreen
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 @Composable
@@ -79,7 +80,6 @@ fun Navigation() {
                 CoursesScreen(clubId = route.clubId, user = route.user)
             }
 
-            // TODO AÑADIR RUTAS MENU LATERAL
             entry<ProfileRoute> { route ->
                 ProfileScreen(
                     user = route.user,
@@ -92,6 +92,13 @@ fun Navigation() {
                     clubId = route.clubId,
                     onBack = { backStack.removeLastOrNull() }
                 )
+            }
+
+            entry<UsersRoute> { route ->
+                UsersScreen(
+                    user = route.user,
+                    clubId = route.clubId,
+                    onBack = { backStack.removeLastOrNull() })
             }
 
             entry<RegisterClubStep1Route> {

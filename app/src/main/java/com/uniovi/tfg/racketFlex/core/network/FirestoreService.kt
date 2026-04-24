@@ -39,12 +39,23 @@ class FirestoreService {
                 .get()
                 .await()
             val modules = doc.get("modulos") as? List<*>
-            Log.d("modules", "FS ${modules.toString()}")
 
             modules?.mapNotNull { it as? String } ?: emptyList()
         } catch (e: Exception) {
-            Log.d("modules", e.toString())
             emptyList()
+        }
+    }
+
+    suspend fun getClubName(clubId: String): String {
+        return try {
+            val doc = db.collection("clubs")
+                .document(clubId)
+                .get()
+                .await()
+
+            doc.get("nombre") as? String ?: ""
+        } catch (e: Exception) {
+            ""
         }
     }
 

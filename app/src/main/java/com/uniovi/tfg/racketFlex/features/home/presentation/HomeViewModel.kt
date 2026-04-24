@@ -18,14 +18,23 @@ class HomeViewModel(
     private val firestoreService: FirestoreService = FirestoreService()
 ) : ViewModel() {
     var modules by mutableStateOf<List<ClubModule>>(emptyList())
+    var clubName by mutableStateOf("")
+
 
     init {
         loadModules()
+        loadName()
     }
 
     fun loadModules() {
         viewModelScope.launch {
             modules = firestoreService.getClubModules(clubId).mapNotNull { it.toClubModule() }
+        }
+    }
+
+    fun loadName() {
+        viewModelScope.launch {
+            clubName = firestoreService.getClubName(clubId)
         }
     }
 
