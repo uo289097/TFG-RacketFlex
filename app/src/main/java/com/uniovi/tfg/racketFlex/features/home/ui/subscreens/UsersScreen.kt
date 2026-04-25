@@ -16,11 +16,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.features.home.presentation.UsersViewModel
+import com.uniovi.tfg.racketFlex.features.home.presentation.UsersViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UsersScreen(clubId: String, user: User, onBack: () -> Unit) {
+
+    val viewModel: UsersViewModel = viewModel(
+        key = user.email,
+        factory = UsersViewModelFactory(clubId, user)
+    )
 
     Scaffold(
         topBar = {
