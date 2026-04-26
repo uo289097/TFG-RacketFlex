@@ -6,7 +6,6 @@ import com.uniovi.tfg.racketFlex.core.model.Sport
 import com.uniovi.tfg.racketFlex.features.matches.domain.MatchesRepository
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.Match
 import com.uniovi.tfg.racketFlex.features.matches.domain.entities.SetScore
-import com.uniovi.tfg.racketFlex.features.matches.domain.entities.TennisMatchType
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

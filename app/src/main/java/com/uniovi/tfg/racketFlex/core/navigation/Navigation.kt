@@ -14,6 +14,7 @@ import com.uniovi.tfg.racketFlex.core.navigation.Routes.CoursesRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.ConfigRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.ProfileRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.UsersRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.AddUserRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep1Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep2Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep3Route
@@ -26,6 +27,7 @@ import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep3
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.HomeScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.AddUserScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ConfigScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ProfileScreen
 import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.UsersScreen
@@ -94,12 +96,25 @@ fun Navigation() {
                 )
             }
 
+
             entry<UsersRoute> { route ->
                 UsersScreen(
                     user = route.user,
                     clubId = route.clubId,
-                    onBack = { backStack.removeLastOrNull() })
+                    onBack = { backStack.removeLastOrNull() },
+                    onNavigateToAddUser = {
+                        backStack.add(AddUserRoute(route.clubId))
+                    }
+                )
             }
+
+            entry<AddUserRoute> { route ->
+                AddUserScreen(
+                    clubId = route.clubId,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
 
             entry<RegisterClubStep1Route> {
                 RegisterClubStep1Screen(

@@ -20,7 +20,7 @@ class FirestoreService {
                     email = doc.getString("email") ?: "",
                     club = doc.getString("club") ?: "",
                     name = doc.getString("nombre") ?: "",
-                    if (doc.getString("rol") == null ||
+                    role = if (doc.getString("rol") == null ||
                         doc.getString("rol") == "socio"
                     ) UserRole.SOCIO else UserRole.ADMIN
                 )

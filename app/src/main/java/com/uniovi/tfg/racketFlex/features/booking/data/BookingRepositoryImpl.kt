@@ -1,6 +1,8 @@
 package com.uniovi.tfg.racketFlex.features.booking.data
 
+import android.util.Log
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.Booking
@@ -37,6 +39,7 @@ class BookingRepositoryImpl(
             }
 
         } catch (e: Exception) {
+            Log.d("bookingRepository", e.toString())
             emptyList()
         }
     }
@@ -82,6 +85,7 @@ class BookingRepositoryImpl(
     }
 
     override suspend fun createMatchBooking(clubId: String, booking: Booking): String {
+        //val data = booking.toHashMap() TODO
         val data = hashMapOf(
             "booker_id" to booking.bookerId,
             "court" to booking.court,
@@ -142,5 +146,35 @@ class BookingRepositoryImpl(
         }
 
         return null // todas ocupadas
+    }
+
+    // TODO Usar y comprobar
+    private fun DocumentSnapshot.toBooking(): Booking {
+        return Booking(
+            bookerId = getString("booker_id") ?: "",
+            court = getString("court") ?: "",
+            initDate = getTimestamp("init_date")?.toDate()?.time ?: 0L,
+            endDate = getTimestamp("end_date")?.toDate()?.time ?: 0L,
+            type = BookingType.valueOf(getString("type")!!.uppercase(getDefault()))
+        )
+    }
+
+    private fun Booking.toHashMap(): Map<String, Any> = hashMapOf(
+        "booker_id" to bookerId,
+        "court" to court,
+        "init_date" to Timestamp(initDate / 1000, 0),
+        "end_date" to Timestamp(endDate / 1000, 0),
+        "type" to type.name.lowercase()
+    )
+
+    private fun DocumentSnapshot.toBookingInfo(): BookingInfo {
+        return BookingInfo(
+            bookingDuration = getField<Int>("booking_duration") ?: 0,
+            openTime = getField<Int>("open_time") ?: 0,
+            closeTime = getField<Int>("close_time") ?: 0,
+            numberTennis = getField<Int>("number_tennis") ?: 0,
+            numberPadel = getField<Int>("number_padel") ?: 0,
+            maxBookingsPerDay = getField<Int>("max_bookings_per_day") ?: 0
+        )
     }
 }

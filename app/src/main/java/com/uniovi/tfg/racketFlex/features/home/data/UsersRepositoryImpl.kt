@@ -1,6 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.home.data
 
-import android.util.Log
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.core.model.UserRole
@@ -18,15 +18,27 @@ class UsersRepositoryImpl(
 
         val list = mutableListOf<User>()
         snapshot.forEach { doc ->
-            val user = User(
-                email = doc.id,
-                name = doc.getString("nombre") ?: "",
-                club = doc.getString("club") ?: "",
-                role = UserRole.SOCIO       // TODO
-            )
-            list.add(user)
+            list.add(doc.toUser())
         }
 
         return list
+    }
+
+    override suspend fun updateRole(userId: String, role: UserRole) {
+        db.collection("users")
+            .document(userId)
+            .update("rol", role.name.lowercase())
+            .await()
+    }
+
+    private fun DocumentSnapshot.toUser(): User {
+        return User(
+            email = id,
+            name = getString("nombre") ?: "",
+            club = getString("club") ?: "",
+            role = if (getString("rol") == null ||
+                getString("rol") == "socio"
+            ) UserRole.SOCIO else UserRole.ADMIN
+        )
     }
 }

@@ -23,7 +23,12 @@ import com.uniovi.tfg.racketFlex.features.home.presentation.UsersViewModelFactor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UsersScreen(clubId: String, user: User, onBack: () -> Unit) {
+fun UsersScreen(
+    clubId: String,
+    user: User,
+    onBack: () -> Unit,
+    onNavigateToAddUser: () -> Unit
+) {
 
     val viewModel: UsersViewModel = viewModel(
         key = user.email,
@@ -43,7 +48,7 @@ fun UsersScreen(clubId: String, user: User, onBack: () -> Unit) {
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { /* TODO */ },
+                onClick = { onNavigateToAddUser() },
                 icon = { Icon(Icons.Filled.Add, "Añadir usuario") },
                 text = { Text("Añadir usuario") },
             )
