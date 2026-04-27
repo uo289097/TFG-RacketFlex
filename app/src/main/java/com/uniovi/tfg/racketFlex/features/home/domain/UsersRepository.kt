@@ -6,4 +6,6 @@ import com.uniovi.tfg.racketFlex.core.model.UserRole
 interface UsersRepository {
     suspend fun getUsers(clubId: String): List<User>
     suspend fun updateRole(userId: String, role: UserRole)
+    suspend fun checkUser(email: String): Boolean
+    suspend fun createUser(user: User)
 }

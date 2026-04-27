@@ -1,16 +1,21 @@
 package com.uniovi.tfg.racketFlex.features.home.ui.subscreens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uniovi.tfg.racketFlex.core.model.UserRole
@@ -38,6 +46,7 @@ fun AddUserScreen(
         key = clubId,
         factory = AddUserViewModelFactory(clubId)
     )
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -76,18 +85,21 @@ fun AddUserScreen(
                 value = viewModel.password,
                 onValueChange = { viewModel.password = it },
                 label = { Text("Contraseña") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(Modifier.height(5.dp))
             OutlinedTextField(
                 value = viewModel.repeatedPassword,
                 onValueChange = { viewModel.repeatedPassword = it },
                 label = { Text("Repetir contraseña") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(Modifier.height(16.dp))
 
-            // TODO AÑADIR ROL
             Text(
                 "Rol del usuario",
                 style = MaterialTheme.typography.labelSmall,
@@ -97,15 +109,38 @@ fun AddUserScreen(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                UserRole.entries.forEach {
+                UserRole.entries.forEach { rol ->
                     Button(
-                        onClick = { viewModel.selectRole(it) },
+                        onClick = { viewModel.selectRole(rol) },
                         modifier = Modifier.weight(1f),
-                        // TODO CAMBIAR COLORES PARA SELECTED ...
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (viewModel.userRole == rol)
+                                    MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surface,
+                            contentColor =
+                                if (viewModel.userRole == rol)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.onSurface
+                        )
                     ) {
-                        Text(it.name)
+                        Text(rol.name)
                     }
                 }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            viewModel.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -118,18 +153,18 @@ fun AddUserScreen(
                     Text("Cancelar")
                 }
                 Button(onClick = {
-                    /*viewModel.saveChanges(
+                    viewModel.createUser(
                         onSuccess = {
                             Toast.makeText(
                                 context,
-                                "Cambios guardados correctamente",
+                                "Usuario creado correctamente",
                                 Toast.LENGTH_SHORT
                             ).show()
                             onBack()
                         }
-                    )*/
+                    )
                 }) {
-                    Text("Guardar cambios")
+                    Text("Crear usuario")
                 }
             }
         }

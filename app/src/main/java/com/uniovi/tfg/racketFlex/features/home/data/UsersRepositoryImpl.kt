@@ -31,6 +31,34 @@ class UsersRepositoryImpl(
             .await()
     }
 
+    override suspend fun checkUser(email: String): Boolean {
+        val doc = db.collection("users")
+            .document(email)
+            .get()
+            .await()
+
+        return doc.exists()
+    }
+
+    override suspend fun createUser(
+        user: User
+    ) {
+        db.collection("users")
+            .document(user.email)
+            .set(user.toHashMap())
+            .await()
+    }
+
+    private fun User.toHashMap(): HashMap<String, Any> {
+        return hashMapOf(
+            "email" to email,
+            "club" to club,
+            "rol" to role.name.lowercase(),
+            "name" to name
+        )
+    }
+
+
     private fun DocumentSnapshot.toUser(): User {
         return User(
             email = id,
