@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.auth.presentation
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
 import com.uniovi.tfg.racketFlex.core.network.FirestoreService
-import com.uniovi.tfg.racketFlex.core.network.toClubModule
 import com.uniovi.tfg.racketFlex.features.auth.data.AuthRepositoryImpl
 import com.uniovi.tfg.racketFlex.features.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow

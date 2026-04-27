@@ -12,6 +12,7 @@ class UsersRepositoryImpl(
 ) : UsersRepository {
     override suspend fun getUsers(clubId: String): List<User> {
         val snapshot = db.collection("users")
+            // TODO .whereArrayContains("club", clubId)
             .whereEqualTo("club", clubId)
             .get()
             .await()
@@ -31,11 +32,18 @@ class UsersRepositoryImpl(
             .await()
     }
 
-    override suspend fun checkUser(email: String): Boolean {
+    override suspend fun checkUser(email: String, clubId: String): Boolean {
         val doc = db.collection("users")
             .document(email)
             .get()
             .await()
+
+        //TODO
+        /*if (!doc.exists())
+            return false
+
+        val clubs = doc.get("club") as List<String>
+        return clubs.contains(clubId)*/
 
         return doc.exists()
     }
@@ -43,9 +51,25 @@ class UsersRepositoryImpl(
     override suspend fun createUser(
         user: User
     ) {
+        // TODO CHECKEAR SI EXISTE EL USUARIO CON OTROS CLUBES
         db.collection("users")
             .document(user.email)
             .set(user.toHashMap())
+            .await()
+    }
+
+    override suspend fun updateUserName(email: String, newName: String) {
+        db.collection("users")
+            .document(email)
+            .update("nombre", newName)
+            .await()
+
+    }
+
+    override suspend fun deleteUser(email: String) {
+        db.collection("users")
+            .document(email)
+            .update("club", "")
             .await()
     }
 
@@ -54,7 +78,7 @@ class UsersRepositoryImpl(
             "email" to email,
             "club" to club,
             "rol" to role.name.lowercase(),
-            "name" to name
+            "nombre" to name
         )
     }
 
@@ -64,6 +88,7 @@ class UsersRepositoryImpl(
             email = id,
             name = getString("nombre") ?: "",
             club = getString("club") ?: "",
+            //TODO club = getField<List<String>>("club") ?: emptyList<String>()
             role = if (getString("rol") == null ||
                 getString("rol") == "socio"
             ) UserRole.SOCIO else UserRole.ADMIN

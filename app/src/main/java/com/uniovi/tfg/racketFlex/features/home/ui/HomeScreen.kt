@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SportsScore
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material3.DrawerValue
@@ -46,8 +45,6 @@ import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
-import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModel
-import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModelFactory
 import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModel
 import com.uniovi.tfg.racketFlex.features.home.presentation.HomeViewModelFactory
 import com.uniovi.tfg.racketFlex.features.home.ui.components.AboutDialog
@@ -62,6 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     user: User,
+    //TODO clubId: String,
     onLogout: () -> Unit,
     onNavigateToUsers: () -> Unit,
     onNavigateToConfig: () -> Unit,
@@ -70,8 +68,8 @@ fun HomeScreen(
 ) {
 
     val viewModel: HomeViewModel = viewModel(
-        key = user.club,
-        factory = HomeViewModelFactory(user.club)
+        key = user.club, //TODO clubId
+        factory = HomeViewModelFactory(user.club/*clubId*/)
     )
 
     LaunchedEffect(user.club) {

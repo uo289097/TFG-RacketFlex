@@ -58,7 +58,7 @@ class AddUserViewModel(
                     errorMessage = "Seleccione un rol para el usuario"
                     return@launch
                 }
-                if (usersRepository.checkUser(email)) {
+                if (usersRepository.checkUser(email, clubId)) {
                     errorMessage = "Ya existe un usuario con este email"
                     return@launch
                 }

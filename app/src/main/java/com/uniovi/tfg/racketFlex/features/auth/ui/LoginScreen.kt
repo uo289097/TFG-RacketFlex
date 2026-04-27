@@ -2,12 +2,33 @@ package com.uniovi.tfg.racketFlex.features.auth.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,20 +39,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.uniovi.tfg.racketFlex.core.model.ClubModule
-import com.uniovi.tfg.racketFlex.core.model.User
-import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
-import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
 import com.uniovi.tfg.racketFlex.R
+import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginState
+import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
     navigateToHome: (User) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    //navigateToClubSelector: (User) -> Unit
 ) {
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
@@ -46,7 +66,6 @@ fun LoginScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Icono circular
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -127,6 +146,16 @@ fun LoginScreen(
 
                 is LoginState.Success -> {
                     val data = uiState as LoginState.Success
+                    /*if (data.user.club.size > 1) {
+                        LaunchedEffect(uiState) {
+                            navigateToClubSelector(data.user)
+                        }
+                    } else {
+                        LaunchedEffect(uiState) {
+                            navigateToHome(data.user)
+                        }
+                    }*/
+
                     LaunchedEffect(uiState) {
                         navigateToHome(data.user)
                     }

@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.core.network
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 

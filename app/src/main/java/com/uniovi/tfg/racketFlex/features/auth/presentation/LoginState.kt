@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.auth.presentation
 
-import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 
 sealed class LoginState {

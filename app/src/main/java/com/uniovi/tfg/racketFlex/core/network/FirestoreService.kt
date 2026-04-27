@@ -18,6 +18,7 @@ class FirestoreService {
                 Log.d("AppRole", doc.getString("rol").toString())
                 User(
                     email = doc.getString("email") ?: "",
+                    //TODO club = doc.getField<List<String>>("club") ?: emptyList(),
                     club = doc.getString("club") ?: "",
                     name = doc.getString("nombre") ?: "",
                     role = if (doc.getString("rol") == null ||
