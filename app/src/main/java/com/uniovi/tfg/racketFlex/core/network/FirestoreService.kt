@@ -18,28 +18,45 @@ class FirestoreService {
                 Log.d("AppRole", doc.getString("rol").toString())
                 User(
                     email = doc.getString("email") ?: "",
+                    //TODO club = doc.getField<List<String>>("club") ?: emptyList(),
                     club = doc.getString("club") ?: "",
                     name = doc.getString("nombre") ?: "",
-                    if (doc.getString("rol") == null ||
+                    role = if (doc.getString("rol") == null ||
                         doc.getString("rol") == "socio"
                     ) UserRole.SOCIO else UserRole.ADMIN
                 )
 
             } else null
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
 
-    suspend fun getClubModules(clubId: String, user: User): List<String> {
+    suspend fun getClubModules(clubId: String): List<String> {
         return try {
-            val doc = db.collection("clubs").document(clubId).get().await()
+            val doc = db.collection("clubs")
+                .document(clubId)
+                .get()
+                .await()
             val modules = doc.get("modulos") as? List<*>
 
             modules?.mapNotNull { it as? String } ?: emptyList()
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun getClubName(clubId: String): String {
+        return try {
+            val doc = db.collection("clubs")
+                .document(clubId)
+                .get()
+                .await()
+
+            doc.get("nombre") as? String ?: ""
+        } catch (e: Exception) {
+            ""
         }
     }
 
@@ -49,7 +66,7 @@ class FirestoreService {
 fun String.toClubModule(): ClubModule? {
     return when (this.lowercase()) {
         "reservas" -> ClubModule.RESERVAS
-        "partidos" -> ClubModule.MATCHES
+        "matches" -> ClubModule.MATCHES
         "courses" -> ClubModule.COURSES
         "competitions" -> ClubModule.COMPETITIONS
         "ranking" -> ClubModule.RANKING

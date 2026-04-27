@@ -1,0 +1,97 @@
+package com.uniovi.tfg.racketFlex.features.home.data
+
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.uniovi.tfg.racketFlex.core.model.User
+import com.uniovi.tfg.racketFlex.core.model.UserRole
+import com.uniovi.tfg.racketFlex.features.home.domain.UsersRepository
+import kotlinx.coroutines.tasks.await
+
+class UsersRepositoryImpl(
+    private val db: FirebaseFirestore
+) : UsersRepository {
+    override suspend fun getUsers(clubId: String): List<User> {
+        val snapshot = db.collection("users")
+            // TODO .whereArrayContains("club", clubId)
+            .whereEqualTo("club", clubId)
+            .get()
+            .await()
+
+        val list = mutableListOf<User>()
+        snapshot.forEach { doc ->
+            list.add(doc.toUser())
+        }
+
+        return list
+    }
+
+    override suspend fun updateRole(userId: String, role: UserRole) {
+        db.collection("users")
+            .document(userId)
+            .update("rol", role.name.lowercase())
+            .await()
+    }
+
+    override suspend fun checkUser(email: String, clubId: String): Boolean {
+        val doc = db.collection("users")
+            .document(email)
+            .get()
+            .await()
+
+        //TODO
+        /*if (!doc.exists())
+            return false
+
+        val clubs = doc.get("club") as List<String>
+        return clubs.contains(clubId)*/
+
+        return doc.exists()
+    }
+
+    override suspend fun createUser(
+        user: User
+    ) {
+        // TODO CHECKEAR SI EXISTE EL USUARIO CON OTROS CLUBES
+        db.collection("users")
+            .document(user.email)
+            .set(user.toHashMap())
+            .await()
+    }
+
+    override suspend fun updateUserName(email: String, newName: String) {
+        db.collection("users")
+            .document(email)
+            .update("nombre", newName)
+            .await()
+
+    }
+
+    override suspend fun deleteUser(email: String) {
+        db.collection("users")
+            .document(email)
+            .update("club", "")
+            .await()
+    }
+
+    private fun User.toHashMap(): HashMap<String, Any> {
+        return hashMapOf(
+            "email" to email,
+            "club" to club,
+            "rol" to role.name.lowercase(),
+            "nombre" to name
+        )
+    }
+
+
+    private fun DocumentSnapshot.toUser(): User {
+        return User(
+            email = id,
+            name = getString("nombre") ?: "",
+            club = getString("club") ?: "",
+            //TODO club = getField<List<String>>("club") ?: emptyList<String>()
+            role = if (getString("rol") == null ||
+                getString("rol") == "socio"
+            ) UserRole.SOCIO else UserRole.ADMIN
+        )
+    }
+}

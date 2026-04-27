@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,10 @@ fun BookingScreen(
         key = user.email,
         factory = BookingViewModelFactory(clubId)
     )
+    LaunchedEffect(user.email) {
+        viewModel.getBookingInfo()
+    }
+
     val bookingInfo = viewModel.bookingInfo ?: return
     val days = remember { (0..6).map { LocalDate.now().plusDays(it.toLong()) } }
     val slotDuration = remember(bookingInfo.bookingDuration) {
@@ -60,7 +65,12 @@ fun BookingScreen(
         var current = startHour
         while (current.plus(slotDuration) <= endHour) {
             result.add(current)
-            current = current.plus(slotDuration)
+
+            val next = current.plus(slotDuration)
+
+            if (next < current) break
+
+            current = next
         }
         result
     }

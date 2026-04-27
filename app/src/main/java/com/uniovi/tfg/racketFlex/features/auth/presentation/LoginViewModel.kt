@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uniovi.tfg.racketFlex.core.network.FirebaseAuthService
 import com.uniovi.tfg.racketFlex.core.network.FirestoreService
-import com.uniovi.tfg.racketFlex.core.network.toClubModule
 import com.uniovi.tfg.racketFlex.features.auth.data.AuthRepositoryImpl
 import com.uniovi.tfg.racketFlex.features.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,13 +37,13 @@ class LoginViewModel(
 
             if (success) {
                 val user = firestore.getUser(username)
-                val modulesRaw =
-                    firestore.getClubModules(user!!.club, user)      // TODO GESTIONAR NULL
-                val modules = modulesRaw.mapNotNull { it.toClubModule() }
-                _uiState.value = LoginState.Success(
-                    user = user,
-                    modules = modules
-                )
+                if (user != null) {
+                    _uiState.value = LoginState.Success(
+                        user = user,
+                    )
+                } else {
+                    _uiState.value = LoginState.Error("No se ha podido iniciar sesión")
+                }
 
             } else {
                 _uiState.value = LoginState.Error("Credenciales incorrectas")

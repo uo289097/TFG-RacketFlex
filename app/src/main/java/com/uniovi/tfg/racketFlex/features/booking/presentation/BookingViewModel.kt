@@ -103,6 +103,7 @@ class BookingViewModel(
     fun hasReachedDailyLimit(userId: String, userRole: UserRole): Boolean {
         val bookingInfo = bookingInfo ?: return true
         if (userRole == UserRole.ADMIN) return false
+        if (bookingInfo.maxBookingsPerDay == 0) return false
         return bookings.count { it.bookerId == userId } >= bookingInfo.maxBookingsPerDay
     }
 

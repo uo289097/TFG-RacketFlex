@@ -11,6 +11,10 @@ import com.uniovi.tfg.racketFlex.core.navigation.Routes.HomeRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.MatchesRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.BookingsRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.CoursesRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.ConfigRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.ProfileRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.UsersRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.AddUserRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep1Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep2Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep3Route
@@ -22,7 +26,11 @@ import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep2
 import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep3Screen
 import com.uniovi.tfg.racketFlex.features.booking.ui.BookingScreen
 import com.uniovi.tfg.racketFlex.features.courses.ui.CoursesScreen
-import com.uniovi.tfg.racketFlex.features.home.HomeScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.HomeScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.AddUserScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ConfigScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.ProfileScreen
+import com.uniovi.tfg.racketFlex.features.home.ui.subscreens.UsersScreen
 import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 
 @Composable
@@ -36,8 +44,8 @@ fun Navigation() {
         entryProvider = entryProvider {
             entry<LoginRoute> {
                 LoginScreen(
-                    navigateToHome = { user, modules ->
-                        backStack.add(HomeRoute(user, modules))
+                    navigateToHome = { user ->
+                        backStack.add(HomeRoute(user))
                     },
                     onNavigateToRegister = {
                         backStack.add(RegisterClubStep1Route)
@@ -46,10 +54,18 @@ fun Navigation() {
             }
             entry<HomeRoute> { route ->
                 HomeScreen(
-                    modules = route.modules,
                     user = route.user,
                     onLogout = {
                         backStack.removeIf { it !is LoginRoute }
+                    },
+                    onNavigateToUsers = {
+                        backStack.add(UsersRoute(route.user.club, route.user))
+                    },
+                    onNavigateToConfig = {
+                        backStack.add(ConfigRoute(route.user.club))
+                    },
+                    onNavigateToProfile = {
+                        backStack.add(ProfileRoute(route.user))
                     }
                 )
             }
@@ -66,6 +82,38 @@ fun Navigation() {
                 CoursesScreen(clubId = route.clubId, user = route.user)
             }
 
+            entry<ProfileRoute> { route ->
+                ProfileScreen(
+                    user = route.user,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
+            entry<ConfigRoute> { route ->
+                ConfigScreen(
+                    clubId = route.clubId,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
+
+            entry<UsersRoute> { route ->
+                UsersScreen(
+                    user = route.user,
+                    clubId = route.clubId,
+                    onBack = { backStack.removeLastOrNull() },
+                    onNavigateToAddUser = {
+                        backStack.add(AddUserRoute(route.clubId))
+                    }
+                )
+            }
+
+            entry<AddUserRoute> { route ->
+                AddUserScreen(
+                    clubId = route.clubId,
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
 
 
             entry<RegisterClubStep1Route> {
