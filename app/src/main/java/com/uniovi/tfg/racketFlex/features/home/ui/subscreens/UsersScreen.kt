@@ -113,9 +113,6 @@ fun UsersScreen(
                         if (userItem.email != user.email) {
                             UserItem(
                                 user = userItem,
-                                onEdit = { newName ->
-                                    viewModel.updateUserName(userItem, newName)
-                                },
                                 onDelete = {
                                     viewModel.deleteUser(userItem)
                                 }
@@ -132,13 +129,10 @@ fun UsersScreen(
 @Composable
 fun UserItem(
     user: User,
-    onEdit: (String) -> Unit,
     onDelete: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    var showEditDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var newName by remember { mutableStateOf(user.name) }
 
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -168,14 +162,6 @@ fun UserItem(
                     onDismissRequest = { showMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Editar nombre") },
-                        onClick = {
-                            showMenu = false
-                            showEditDialog = true
-                        }
-                    )
-
-                    DropdownMenuItem(
                         text = { Text("Eliminar") },
                         onClick = {
                             showMenu = false
@@ -186,33 +172,6 @@ fun UserItem(
                 }
             }
         }
-    }
-
-    if (showEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDialog = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    onEdit(newName)
-                    showEditDialog = false
-                }) {
-                    Text("Guardar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditDialog = false }) {
-                    Text("Cancelar")
-                }
-            },
-            title = { Text("Editar nombre") },
-            text = {
-                OutlinedTextField(
-                    value = newName,
-                    onValueChange = { newName = it },
-                    label = { Text("Nombre") }
-                )
-            }
-        )
     }
 
     if (showDeleteDialog) {

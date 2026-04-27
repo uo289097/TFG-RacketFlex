@@ -52,7 +52,7 @@ class UsersViewModel(
 
     fun deleteUser(user: User) {
         viewModelScope.launch {
-            usersRepository.deleteUser(user.email)
+            usersRepository.deleteUser(user.email, clubId)
             users = users.filter { it.email != user.email }
         }
     }

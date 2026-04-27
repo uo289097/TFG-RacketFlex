@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class User(
     val email: String = "",
-    //TODO val club: List<String> = emptyList(),
-    val club: String = "",
+    val club: List<String> = emptyList(),
     val name: String = "",
     val role: UserRole
 )

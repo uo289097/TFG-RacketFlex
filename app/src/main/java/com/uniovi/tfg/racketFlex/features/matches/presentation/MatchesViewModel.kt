@@ -174,7 +174,11 @@ class MatchesViewModel(
                 val endDate = initDate + bookingInfo.bookingDuration
 
                 val userLimitReached =
-                    bookings.count { it.bookerId == userId } >= 2
+                    if (userRole == UserRole.ADMIN)
+                        false
+                    else
+                        bookings.count { it.bookerId == userId } >= bookingInfo.maxBookingsPerDay
+
 
                 val hasConflict = bookings.any {
                     it.bookerId == userId &&

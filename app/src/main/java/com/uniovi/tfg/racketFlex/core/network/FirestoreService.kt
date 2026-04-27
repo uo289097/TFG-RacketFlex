@@ -2,6 +2,7 @@ package com.uniovi.tfg.racketFlex.core.network
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.core.model.UserRole
@@ -12,14 +13,15 @@ class FirestoreService {
 
     suspend fun getUser(email: String): User? {
         return try {
-            val doc = db.collection("users").document(email).get().await()
+            val doc = db.collection("users")
+                .document(email)
+                .get()
+                .await()
 
             if (doc.exists()) {
-                Log.d("AppRole", doc.getString("rol").toString())
                 User(
                     email = doc.getString("email") ?: "",
-                    //TODO club = doc.getField<List<String>>("club") ?: emptyList(),
-                    club = doc.getString("club") ?: "",
+                    club = (doc.get("club") as? List<String>) ?: emptyList(),
                     name = doc.getString("nombre") ?: "",
                     role = if (doc.getString("rol") == null ||
                         doc.getString("rol") == "socio"
@@ -28,7 +30,8 @@ class FirestoreService {
 
             } else null
 
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.d("multiple", e.toString())
             null
         }
     }

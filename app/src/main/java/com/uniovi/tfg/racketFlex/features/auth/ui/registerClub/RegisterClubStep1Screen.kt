@@ -1,5 +1,6 @@
 package com.uniovi.tfg.racketFlex.features.auth.ui.registerClub
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -18,6 +21,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,6 +37,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.uniovi.tfg.racketFlex.core.model.ClubModule
 import com.uniovi.tfg.racketFlex.features.auth.presentation.RegisterClubViewModel
+import com.uniovi.tfg.racketFlex.features.auth.ui.components.ModuleSelectorRegister
+import com.uniovi.tfg.racketFlex.features.home.presentation.ConfigViewModel
+import com.uniovi.tfg.racketFlex.features.home.ui.components.ModuleSelector
+import kotlin.collections.plus
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,29 +88,12 @@ fun RegisterClubStep1Screen(
                     .menuAnchor()
             )
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+            // TODO AQUÍ
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.horizontalScroll(rememberScrollState())
             ) {
-                ClubModule.entries.forEach { module ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = module in viewModel.selectedModules,
-                                    onCheckedChange = null
-                                )
-                                Text(module.name)
-                            }
-                        },
-                        onClick = {
-                            viewModel.selectedModules = if (module in viewModel.selectedModules)
-                                viewModel.selectedModules - module
-                            else
-                                viewModel.selectedModules + module
-                        }
-                    )
-                }
+                ModuleSelectorRegister(viewModel)
             }
         }
 
@@ -164,3 +156,4 @@ fun RegisterClubStep1Screen(
         Spacer(Modifier.height(10.dp))
     }
 }
+

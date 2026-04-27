@@ -1,6 +1,5 @@
 package com.uniovi.tfg.racketFlex.features.home.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,7 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     user: User,
-    //TODO clubId: String,
+    clubId: String,
     onLogout: () -> Unit,
     onNavigateToUsers: () -> Unit,
     onNavigateToConfig: () -> Unit,
@@ -68,8 +67,8 @@ fun HomeScreen(
 ) {
 
     val viewModel: HomeViewModel = viewModel(
-        key = user.club, //TODO clubId
-        factory = HomeViewModelFactory(user.club/*clubId*/)
+        key = clubId,
+        factory = HomeViewModelFactory(clubId)
     )
 
     LaunchedEffect(user.club) {
@@ -106,7 +105,6 @@ fun HomeScreen(
                         },
                         onNavigateToConfig = {
                             scope.launch { drawerState.close() }
-                            Log.d("HomeScreen", "onNavigateToConfig")
                             onNavigateToConfig()
                         }
                     )
@@ -183,9 +181,9 @@ fun HomeScreen(
                     .fillMaxSize()
             ) {
                 when (selectedModule) {
-                    ClubModule.RESERVAS -> BookingScreen(clubId = user.club, user = user)
-                    ClubModule.MATCHES -> MatchesScreen(clubId = user.club, user = user)
-                    ClubModule.COURSES -> CoursesScreen(clubId = user.club, user = user)
+                    ClubModule.RESERVAS -> BookingScreen(clubId = clubId, user = user)
+                    ClubModule.MATCHES -> MatchesScreen(clubId = clubId, user = user)
+                    ClubModule.COURSES -> CoursesScreen(clubId = clubId, user = user)
                     ClubModule.COMPETITIONS -> Text("Módulo no implementado")
                     ClubModule.RANKING -> Text("Módulo no implementado")
                 }

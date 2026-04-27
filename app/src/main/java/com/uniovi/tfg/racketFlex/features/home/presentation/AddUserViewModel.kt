@@ -64,7 +64,7 @@ class AddUserViewModel(
                 }
                 val user = User(
                     email = email,
-                    club = clubId,
+                    club = listOf(clubId),
                     name = name,
                     role = userRole!!
                 )

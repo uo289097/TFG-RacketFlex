@@ -1,7 +1,9 @@
 package com.uniovi.tfg.racketFlex.features.home.data
 
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.getField
 import com.uniovi.tfg.racketFlex.core.model.User
 import com.uniovi.tfg.racketFlex.core.model.UserRole
 import com.uniovi.tfg.racketFlex.features.home.domain.UsersRepository
@@ -12,8 +14,7 @@ class UsersRepositoryImpl(
 ) : UsersRepository {
     override suspend fun getUsers(clubId: String): List<User> {
         val snapshot = db.collection("users")
-            // TODO .whereArrayContains("club", clubId)
-            .whereEqualTo("club", clubId)
+            .whereArrayContains("club", clubId)
             .get()
             .await()
 
@@ -38,24 +39,33 @@ class UsersRepositoryImpl(
             .get()
             .await()
 
-        //TODO
-        /*if (!doc.exists())
+        if (!doc.exists())
             return false
 
-        val clubs = doc.get("club") as List<String>
-        return clubs.contains(clubId)*/
+        val clubs = (doc.get("club") as? List<String>) ?: return false
 
-        return doc.exists()
+        return clubs.contains(clubId)
     }
 
     override suspend fun createUser(
         user: User
     ) {
-        // TODO CHECKEAR SI EXISTE EL USUARIO CON OTROS CLUBES
-        db.collection("users")
+        val doc = db.collection("users")
             .document(user.email)
-            .set(user.toHashMap())
+            .get()
             .await()
+
+        if (doc.exists()) {
+            db.collection("users")
+                .document(user.email)
+                .update("club", FieldValue.arrayUnion(user.club))
+                .await()
+        } else {
+            db.collection("users")
+                .document(user.email)
+                .set(user.toHashMap())
+                .await()
+        }
     }
 
     override suspend fun updateUserName(email: String, newName: String) {
@@ -66,10 +76,10 @@ class UsersRepositoryImpl(
 
     }
 
-    override suspend fun deleteUser(email: String) {
+    override suspend fun deleteUser(email: String, clubId: String) {
         db.collection("users")
             .document(email)
-            .update("club", "")
+            .update("club", FieldValue.arrayRemove(clubId))
             .await()
     }
 
@@ -87,8 +97,7 @@ class UsersRepositoryImpl(
         return User(
             email = id,
             name = getString("nombre") ?: "",
-            club = getString("club") ?: "",
-            //TODO club = getField<List<String>>("club") ?: emptyList<String>()
+            club = (get("club") as? List<String>) ?: emptyList(),
             role = if (getString("rol") == null ||
                 getString("rol") == "socio"
             ) UserRole.SOCIO else UserRole.ADMIN

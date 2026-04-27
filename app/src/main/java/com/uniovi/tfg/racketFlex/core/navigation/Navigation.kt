@@ -8,6 +8,7 @@ import androidx.navigation3.ui.NavDisplay
 
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.LoginRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.HomeRoute
+import com.uniovi.tfg.racketFlex.core.navigation.Routes.ClubSelectorRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.MatchesRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.BookingsRoute
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.CoursesRoute
@@ -36,7 +37,7 @@ import com.uniovi.tfg.racketFlex.features.matches.ui.MatchesScreen
 @Composable
 fun Navigation() {
     val backStack = rememberNavBackStack(LoginRoute)
-    val registerViewModel: RegisterClubViewModel = viewModel()  // fuera del entryProvider
+    val registerViewModel: RegisterClubViewModel = viewModel()
 
     NavDisplay(
         backStack = backStack,
@@ -44,25 +45,34 @@ fun Navigation() {
         entryProvider = entryProvider {
             entry<LoginRoute> {
                 LoginScreen(
-                    navigateToHome = { user ->
-                        backStack.add(HomeRoute(user))
+                    navigateToHome = { user, clubId ->
+                        backStack.add(
+                            HomeRoute(
+                                user = user,
+                                clubId = clubId
+                            )
+                        )
                     },
                     onNavigateToRegister = {
                         backStack.add(RegisterClubStep1Route)
+                    },
+                    navigateToClubSelector = { user ->
+                        backStack.add(ClubSelectorRoute(user))
                     }
                 )
             }
             entry<HomeRoute> { route ->
                 HomeScreen(
                     user = route.user,
+                    clubId = route.clubId,
                     onLogout = {
                         backStack.removeIf { it !is LoginRoute }
                     },
                     onNavigateToUsers = {
-                        backStack.add(UsersRoute(route.user.club, route.user))
+                        backStack.add(UsersRoute(route.clubId, route.user))
                     },
                     onNavigateToConfig = {
-                        backStack.add(ConfigRoute(route.user.club))
+                        backStack.add(ConfigRoute(route.clubId))
                     },
                     onNavigateToProfile = {
                         backStack.add(ProfileRoute(route.user))

@@ -48,9 +48,9 @@ import com.uniovi.tfg.racketFlex.features.auth.presentation.LoginViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    navigateToHome: (User) -> Unit,
+    navigateToHome: (User, String) -> Unit,
     onNavigateToRegister: () -> Unit,
-    //navigateToClubSelector: (User) -> Unit
+    navigateToClubSelector: (User) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -146,18 +146,14 @@ fun LoginScreen(
 
                 is LoginState.Success -> {
                     val data = uiState as LoginState.Success
-                    /*if (data.user.club.size > 1) {
+                    if (data.user.club.size > 1) {
                         LaunchedEffect(uiState) {
                             navigateToClubSelector(data.user)
                         }
                     } else {
                         LaunchedEffect(uiState) {
-                            navigateToHome(data.user)
+                            navigateToHome(data.user, data.user.club[0])
                         }
-                    }*/
-
-                    LaunchedEffect(uiState) {
-                        navigateToHome(data.user)
                     }
                 }
 
