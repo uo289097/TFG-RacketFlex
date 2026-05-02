@@ -21,6 +21,7 @@ import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep2Route
 import com.uniovi.tfg.racketFlex.core.navigation.Routes.RegisterClubStep3Route
 
 import com.uniovi.tfg.racketFlex.features.auth.presentation.RegisterClubViewModel
+import com.uniovi.tfg.racketFlex.features.auth.ui.ClubSelectorScreen
 import com.uniovi.tfg.racketFlex.features.auth.ui.LoginScreen
 import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep1Screen
 import com.uniovi.tfg.racketFlex.features.auth.ui.registerClub.RegisterClubStep2Screen
@@ -76,6 +77,21 @@ fun Navigation() {
                     },
                     onNavigateToProfile = {
                         backStack.add(ProfileRoute(route.user))
+                    }
+                )
+            }
+
+            entry<ClubSelectorRoute> { route ->
+                ClubSelectorScreen(
+                    user = route.user,
+                    onClubSelected = { clubId ->
+                        backStack.removeLastOrNull()
+                        backStack.add(
+                            HomeRoute(
+                                user = route.user,
+                                clubId = clubId
+                            )
+                        )
                     }
                 )
             }
